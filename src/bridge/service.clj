@@ -3,9 +3,11 @@
             [bridge.config :as config]
             [bridge.web.access :as web.access]
             [bridge.web.client :as web.client]
+            bridge.web.jetty
             [buddy.auth :as buddy]
             [buddy.auth.backends.session :as buddy.session]
             [buddy.auth.middleware :as buddy.middleware]
+            [clojure.tools.logging :as logging]
             [integrant.core :as ig]
             [ring.middleware.keyword-params :as ring.keyword-params]
             [ring.middleware.params :as ring.params]
@@ -43,4 +45,5 @@
       (ring.session/wrap-session cookie-config)))
 
 (defn -main [& args]
+  (logging/info "Starting on port " (get-in (config/system) [:adapter/jetty :port]))
   (ig/init (config/system)))

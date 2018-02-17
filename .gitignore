@@ -3,4 +3,5 @@
 .cpcache
 .nrepl-port
 figwheel_server.log
-uberjar.jar
+bridge.jar
+nashorn_code_cache

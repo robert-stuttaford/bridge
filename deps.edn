@@ -29,8 +29,6 @@
   ;; Cljs
   org.clojure/clojurescript {:git/url "https://github.com/clojure/clojurescript"
                              :sha     "4df0542339e533b2d1e1dd7f6ffa8824eab64893"}
-  com.cemerick/piggieback   {:mvn/version "0.2.2" :exclusions
-                             [com.google.javascript/closure-compiler]}
   figwheel-sidecar          {:mvn/version "0.5.14" :exclusions
                              [com.google.javascript/closure-compiler]}
   rum                       {:mvn/version "0.11.1"}
@@ -56,9 +54,9 @@
      :sha     "5fb4fc46ad0bf2e0ce45eba5b9117a2e89166479"}}
    :main-opts   ["-m" "cognitect.test-runner"]}
 
-  :pack
+  :uberjar
   {:extra-deps
    {pack/pack.alpha
     {:git/url "git@github.com:juxt/pack.alpha.git"
      :sha     "eed89476315661e2389d5d078ec17375bec3efa5"}}
-   :main-opts ["-m" "mach.pack.alpha.jcl" "deps.edn" "uberjar.jar" "resources"]}}}
+   :main-opts ["-m" "mach.pack.alpha.jcl" "deps.edn" "bridge.jar" "resources"]}}}

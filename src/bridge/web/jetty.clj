@@ -1,4 +1,4 @@
-(ns bridge.ring.jetty
+(ns bridge.web.jetty
   (:require [integrant.core :as ig]
             [ring.adapter.jetty :as jetty]))
 
