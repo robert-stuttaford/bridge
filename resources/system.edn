@@ -1,3 +1,14 @@
-{:adapter/jetty   {:port    8080
-                   :handler #ig/ref :service/handler}
- :service/handler {}}
+{:adapter/jetty
+ {:port    8080
+  :handler #ig/ref :service/handler}
+
+ :datomic/connection
+ {:uri #dyn/prop [DATOMIC_URI "datomic:free://localhost:4334/bridge"]}
+
+ :service/handler
+ {:cookie {:cookie-name  #dyn/prop [COOKIE_NAME "bridge"]
+           :cookie-attrs {:path      "/"
+                          :http-only true
+                          :secure    false}
+           :store        {:key #dyn/prop [COOKIE_SECRET "3iUhJxv352SKxo0N"]}}
+  :conn   #ig/ref :datomic/connection}}

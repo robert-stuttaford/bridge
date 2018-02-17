@@ -3,6 +3,9 @@
             [buddy.hashers :as hashers]
             [ring.util.response :as response]))
 
+(defn login-uri [next]
+  (str "/login?next=" next))
+
 (def auth-data
   {"admin@cb.org" (hashers/derive "secret")
    "test@cb.org"  (hashers/derive "secret")})

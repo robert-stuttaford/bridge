@@ -4,7 +4,7 @@
 
 Own profile access and management
 - Create
-- Login
+- ~~Login~~
 
 New Events
 - Create
