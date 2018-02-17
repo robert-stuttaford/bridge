@@ -1,5 +1,5 @@
 (ns user
-  (:require [integrant.core :as ig]
+  (:require [bridge.config :as config]
             [integrant.repl :as ig.repl]))
 
-(ig.repl/set-prep! #(-> "system.edn" slurp ig/read-string))
+(ig.repl/set-prep! config/system)

@@ -1,0 +1,6 @@
+{:cookie
+ {:store {:key "3iUhJxv352SKxo0N"}
+  :ring  {:cookie-name  "bridge"
+          :cookie-attrs {:path      "/"
+                         :http-only true
+                         :secure    false}}}}
