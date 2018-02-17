@@ -3,32 +3,50 @@
             [buddy.hashers :as hashers]
             [ring.util.response :as response]))
 
-(def authdata
-  "Global var that stores valid users with their
-   respective passwords."
-  {:admin (hashers/derive "secret")
-   :test  (hashers/derive "secret")})
+(def auth-data
+  {"admin@cb.org" (hashers/derive "secret")
+   "test@cb.org"  (hashers/derive "secret")})
 
-(defn login [{:keys [request-method params]}]
-  (or (when (= :post request-method)
-        (let [username (:username params)
-              password (:password params)]
-          (when (hashers/check password (get authdata (keyword username)))
-            (-> (response/redirect (:next params "/"))
-                (assoc-in [:session :identity] (keyword username))))))
+(defn login [{:keys [request-method]
+              {:keys [email password next] :or {next "/"}} :params}]
+  (or (when (and (= :post request-method)
+                 (hashers/check password (get auth-data email)))
+        (-> (response/redirect next)
+            (assoc-in [:session :identity] email)))
       (web.template/hiccup-response
-       [:h1 "Login"]
-       [:form {:method "post"}
-        [:input {:type        "text"
-                 :placeholder "Username:"
-                 :value       "test"
-                 :name        "username"}]
-        [:input {:type        "password"
-                 :placeholder "Password:"
-                 :value       "secret"
-                 :name        "password"}]
-        [:input {:type  "submit"
-                 :value "Submit"}]])))
+       [:section.hero.is-success.is-fullheight
+        [:div.hero-body
+         [:div.container.has-text-centered
+          [:div.column.is-4.is-offset-4
+           [:h3.title.has-text-grey "Login"]
+           [:p.subtitle.has-text-grey "Please login to proceed."]
+           [:div.box
+            [:figure.avatar
+             [:img {:src "http://www.clojurebridge.org/assets/logo-small-608079136860146e2095ff960b78fd0d.png"}]]
+            [:form {:method "post"}
+             [:div.field
+              [:div.control
+               [:input.input.is-large
+                {:type        "email"
+                 :name        "email"
+                 :placeholder "Your Email"
+                 :autofocus   ""}]]]
+             [:div.field
+              [:div.control
+               [:input.input.is-large
+                {:type        "password"
+                 :name        "password"
+                 :placeholder "Your Password"}]]]
+             [:div.field
+              [:label.checkbox [:input {:type "checkbox"}]
+               " Remember me"]]
+             [:button.button.is-block.is-info.is-large.is-fullwidth "Login"]]]
+           [:p.has-text-grey
+            [:a {:href "../"} "Sign Up"]
+            "  ·  "
+            [:a {:href "../"} "Forgot Password"]
+            "  ·  "
+            [:a {:href "../"} "Need Help?"]]]]]])))
 
 (defn logout [req]
   (-> (response/redirect "/login")
