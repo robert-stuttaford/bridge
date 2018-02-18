@@ -14,17 +14,17 @@ To build the Cljs and run the web server:
 make compile serve
 ```
 
+Visit http://localhost:8080, and sign in with `test@cb.org` / `secret`.
+
 ### Interactive development with the REPL and Figwheel
 
-I use Emacs, [CIDER](https://github.com/clojure-emacs/cider), and [clj-refactor](https://github.com/clojure-emacs/clj-refactor.el), so development assumes that you have `cider-refresh` available to you. Instead of the above, run:
+I use Emacs, [CIDER](https://github.com/clojure-emacs/cider), and [clj-refactor](https://github.com/clojure-emacs/clj-refactor.el), so I assume that you have `cider-refresh` available to you.
 
 ```shell
 make figwheel
 ```
 
 Once it's running, connect CIDER to port `7890`, and issue a `cider-refresh` (`C-c C-x`) to start the system. 
-
-Visit http://localhost:8080, and sign in with `test@cb.org` / `secret`.
 
 ### Run tests
 
