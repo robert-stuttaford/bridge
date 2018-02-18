@@ -3,12 +3,12 @@
   :handler #ig/ref :service/handler}
 
  :datomic/connection
- {:uri #dyn/prop [DATOMIC_URI "datomic:free://localhost:4334/bridge"]}
+ {:uri #dyn/prop [BRIDGE_DATOMIC_URI "datomic:mem://bridge"]}
 
  :service/handler
- {:cookie {:cookie-name  #dyn/prop [COOKIE_NAME "bridge"]
+ {:cookie {:cookie-name  #dyn/prop [BRIDGE_COOKIE_NAME "bridge"]
            :cookie-attrs {:path      "/"
                           :http-only true
                           :secure    false}
-           :store        {:key #dyn/prop [COOKIE_SECRET "3iUhJxv352SKxo0N"]}}
+           :store        {:key #dyn/prop [BRIDGE_COOKIE_SECRET "3iUhJxv352SKxo0N"]}}
   :conn   #ig/ref :datomic/connection}}
