@@ -59,7 +59,7 @@ export BRIDGE_DATOMIC_URI="datomic:free://localhost:4334/bridge"
 
 - [Requirements](doc/requirements.md).
 - [Features](doc/system.md).
-- [Schema](doc/schema).
+- [Schema](doc/schema.md).
 
 
 ## License
