@@ -58,5 +58,5 @@
 (def routes
   {:routes   {"/login"  [:login]
               "/logout" [:logout]}
-   :handlers {:login  login
-              :logout logout}})
+   :handlers {:login  #'login
+              :logout #'logout}})

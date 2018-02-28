@@ -20,7 +20,7 @@
      "/bridge.css"         [:css]
      ^{:re #"/js/.*"} path [:js-resource path]}
    :handlers
-   {:client      client
+   {:client      #'client
     :js-resource #(-> (:uri %)
                       (str/replace #"^/" "")
                       response/resource-response
