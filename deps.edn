@@ -28,8 +28,7 @@
   hiccup                         {:mvn/version "1.0.5"}
 
   ;; Cljs
-  org.clojure/clojurescript {:git/url "https://github.com/clojure/clojurescript"
-                             :sha     "4df0542339e533b2d1e1dd7f6ffa8824eab64893"}
+  org.clojure/clojurescript {:mvn/version "1.10.64"}
   figwheel-sidecar          {:mvn/version "0.5.14" :exclusions
                              [com.google.javascript/closure-compiler]}
   rum                       {:mvn/version "0.11.1"}
@@ -59,5 +58,5 @@
   {:extra-deps
    {pack/pack.alpha
     {:git/url "git@github.com:juxt/pack.alpha.git"
-     :sha     "eed89476315661e2389d5d078ec17375bec3efa5"}}
+     :sha     "bb2c5a2c78aca9328e023b029c06ba0efdd1e3b7"}}
    :main-opts ["-m" "mach.pack.alpha.jcl" "deps.edn" "bridge.jar" "resources"]}}}
