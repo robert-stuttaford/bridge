@@ -4,6 +4,7 @@
             [bridge.data.datomic :as data.datomic]
             [bridge.web.access :as web.access]
             [bridge.web.client :as web.client]
+            [bridge.web.debug :as web.debug]
             [buddy.auth :as buddy]
             [buddy.auth.backends.session :as buddy.session]
             [buddy.auth.middleware :as buddy.middleware]
@@ -28,7 +29,8 @@
 (defmethod ig/init-key :service/handler [_ {:keys [cookie datomic]}]
   (-> (merge-with merge
                   web.access/routes
-                  web.client/routes)
+                  web.client/routes
+                  web.debug/routes)
       ataraxy/handler
       (data.datomic/wrap-datomic datomic)
       (buddy.middleware/wrap-authorization auth-backend)
