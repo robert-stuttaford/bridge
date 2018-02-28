@@ -25,12 +25,12 @@
         {:status 403}
         (response/redirect (web.access/login-uri uri) )))}))
 
-(defmethod ig/init-key :service/handler [_ {:keys [cookie conn]}]
+(defmethod ig/init-key :service/handler [_ {:keys [cookie datomic]}]
   (-> (merge-with merge
                   web.access/routes
                   web.client/routes)
       ataraxy/handler
-      (data.datomic/wrap-datomic conn)
+      (data.datomic/wrap-datomic datomic)
       (buddy.middleware/wrap-authorization auth-backend)
       (buddy.middleware/wrap-authentication auth-backend)
       ring.keyword-params/wrap-keyword-params

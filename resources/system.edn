@@ -1,14 +1,24 @@
-{:adapter/jetty
- {:port    8080
-  :handler #ig/ref :service/handler}
+{:datomic/connection
+ {:datomic/mode :peer ;; or :client
 
- :datomic/connection
- {:uri #dyn/prop [BRIDGE_DATOMIC_URI "datomic:mem://bridge"]}
+  ;; for :peer
+  :uri          #dyn/prop BRIDGE_DATOMIC_URI
+
+  ;; for :client
+  :client       {:server-type :peer-server
+                 :access-key  #dyn/prop BRIDGE_DATOMIC_CLIENT_KEY
+                 :secret      #dyn/prop BRIDGE_DATOMIC_CLIENT_SECRET
+                 :endpoint    #dyn/prop BRIDGE_DATOMIC_CLIENT_ENDPOINT}
+  :db-name      #dyn/prop BRIDGE_DATOMIC_DB}
 
  :service/handler
- {:cookie {:cookie-name  #dyn/prop [BRIDGE_COOKIE_NAME "bridge"]
-           :cookie-attrs {:path      "/"
-                          :http-only true
-                          :secure    false}
-           :store        {:key #dyn/prop [BRIDGE_COOKIE_SECRET "3iUhJxv352SKxo0N"]}}
-  :conn   #ig/ref :datomic/connection}}
+ {:cookie  {:cookie-name  #dyn/prop BRIDGE_COOKIE_NAME
+            :cookie-attrs {:path      "/"
+                           :http-only true
+                           :secure    false}
+            :store        {:key #dyn/prop BRIDGE_COOKIE_SECRET}}
+  :datomic #ig/ref :datomic/connection}
+
+ :adapter/jetty
+ {:port    8080
+  :handler #ig/ref :service/handler}}
