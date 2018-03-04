@@ -2,17 +2,14 @@
 
 all: figwheel
 
-env:
-	source bridge.env
-
-serve: env
-	clojure -m bridge.service
+serve:
+	source bridge.env && clojure -m bridge.service
 
 test:
 	clojure -A\:test
 
-figwheel: env
-	clojure -A\:dev dev/figwheel.clj
+figwheel:
+	source bridge.env && clojure -A\:dev dev/figwheel.clj
 
 clean:
 	rm -rf resources/js target bridge.jar
@@ -23,7 +20,7 @@ compile:
 uberjar:
 	clojure -A\:uberjar
 
-serve-jar: env
-	java -jar bridge.jar -m bridge.service
+serve-jar:
+	source bridge.env && java -jar bridge.jar -m bridge.service
 
 pack: clean compile uberjar
