@@ -49,7 +49,7 @@
           (cond (nil? person-id)
                 (login-page :incorrect-details)
 
-                (some? (datomic/attr db person-id :person/email-confirm-token))
+                (some? (datomic/attr db person-id :person/confirm-email-token))
                 (login-page :confirm-email-first)
 
                 (person.data/correct-password?

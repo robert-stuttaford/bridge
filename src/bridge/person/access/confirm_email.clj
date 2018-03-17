@@ -23,7 +23,7 @@
 
 (defn confirm-email [{[_ token] :ataraxy/result
                       :datomic/keys [conn db]}]
-  (or (when-some [person-id (person.data/person-id-by-email-confirm-token db token)]
+  (or (when-some [person-id (person.data/person-id-by-confirm-email-token db token)]
         (try
           (person.data/confirm-email! conn person-id token)
 

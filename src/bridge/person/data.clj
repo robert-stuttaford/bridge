@@ -34,8 +34,8 @@
 (defn person-id-by-email [db email]
   (datomic/entid db [:person/email (clean-email email)]))
 
-(defn person-id-by-email-confirm-token [db token]
-  (datomic/entid db [:person/email-confirm-token token]))
+(defn person-id-by-confirm-email-token [db token]
+  (datomic/entid db [:person/confirm-email-token token]))
 
 (defn person-id-by-reset-password-token [db token]
   (datomic/entid db [:person/reset-password-token token]))
@@ -53,16 +53,16 @@
       (update :person/email clean-email)
       (update :person/password hash-password)
       (merge #:person{:status :status/active
-                      :email-confirm-token (nonce)})))
+                      :confirm-email-token (nonce)})))
 
 (defn save-new-person! [conn person-tx]
   (datomic/transact! conn [person-tx])
-  (let [{:person/keys [email email-confirm-token]} person-tx]
-    (send-email! email (str "your email confirm token: " email-confirm-token))))
+  (let [{:person/keys [email confirm-email-token]} person-tx]
+    (send-email! email (str "your email confirm token: " confirm-email-token))))
 
 (defn confirm-email! [conn person-id token]
   (datomic/transact! conn
-                     [[:db/retract person-id :person/email-confirm-token token]]))
+                     [[:db/retract person-id :person/confirm-email-token token]]))
 
 (defn request-password-reset! [conn person-id]
   (let [token (nonce)
@@ -98,7 +98,7 @@
     :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/keyword}
 
-   {:db/ident       :person/email-confirm-token
+   {:db/ident       :person/confirm-email-token
     :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/string
     :db/unique      :db.unique/value}
@@ -115,7 +115,7 @@
 (s/def :person/email :bridge.spec/email)
 (s/def :person/password :bridge.spec/required-string)
 (s/def :person/status #{:status/active :status/suspended :status/deleted})
-(s/def :person/email-confirm-token :bridge.spec/nonce)
+(s/def :person/confirm-email-token :bridge.spec/nonce)
 (s/def :person/reset-password-token :bridge.spec/nonce)
 
 (s/def :bridge/new-person
@@ -125,7 +125,7 @@
   (s/merge :bridge/new-person (s/keys :req [:person/status])))
 
 (s/def :bridge/new-person-tx
-  (s/merge :bridge/person (s/keys :req [:person/email-confirm-token])))
+  (s/merge :bridge/person (s/keys :req [:person/confirm-email-token])))
 
 (s/fdef new-person-tx
         :args (s/cat :new-person :bridge/new-person)

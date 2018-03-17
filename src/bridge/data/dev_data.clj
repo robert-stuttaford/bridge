@@ -9,7 +9,7 @@
       (person.data/save-new-person! conn new-person-tx)
       (person.data/confirm-email! conn
                                   (person.data/person-id-by-email (datomic/db conn) email)
-                                  (:person/email-confirm-token new-person-tx)))))
+                                  (:person/confirm-email-token new-person-tx)))))
 
 (defmethod ig/init-key :datomic/dev-data [_ {{:datomic/keys [mode conn]} :datomic}]
   (datomic/with-datomic-mode mode
