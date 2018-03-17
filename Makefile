@@ -15,7 +15,7 @@ clean:
 	rm -rf resources/js target bridge.jar
 
 compile:
-	clojure -m cljs.main -d resources/js/out -t browser -O advanced -o resources/js/app.js -c bridge.main
+	clojure -m cljs.main -cf "{:source-map \"resources/js/app.js.map\"}" -d resources/js/out -t browser -O advanced -o resources/js/app.js -c bridge.main
 
 uberjar:
 	clojure -A\:uberjar
