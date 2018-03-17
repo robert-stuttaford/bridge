@@ -27,6 +27,7 @@
   org.eclipse.jetty/jetty-server {:mvn/version "9.3.7.v20160115"}
   ataraxy                        {:mvn/version "0.4.0"}
   hiccup                         {:mvn/version "1.0.5"}
+  ring/ring-devel                {:mvn/version "1.6.3"}
 
   ;; Cljs
   org.clojure/clojurescript {:mvn/version "1.10.64"}

@@ -14,6 +14,7 @@
             [ring.middleware.params :as ring.params]
             [ring.middleware.session :as ring.session]
             [ring.middleware.session.cookie :as ring.cookie]
+            [ring.middleware.stacktrace :as ring.stacktrace]
             [ring.util.response :as response]))
 
 (require 'bridge.web.jetty)
@@ -37,7 +38,8 @@
       (buddy.middleware/wrap-authentication auth-backend)
       ring.keyword-params/wrap-keyword-params
       ring.params/wrap-params
-      (ring.session/wrap-session (update cookie :store ring.cookie/cookie-store))))
+      (ring.session/wrap-session (update cookie :store ring.cookie/cookie-store))
+      (ring.stacktrace/wrap-stacktrace-web)))
 
 (defn -main [& args]
   (logging/info "Starting on port " (get-in (config/system) [:adapter/jetty :port]))

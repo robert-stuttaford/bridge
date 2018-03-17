@@ -18,18 +18,21 @@
   (is (thrown-with-msg? ExceptionInfo #"did not conform to spec"
                         (person.data/new-person-tx {})))
 
-  (let [tx (person.data/new-person-tx {:person/email    "test@cg.org"
-                                       :person/password "secret"})]
+  (let [TEST-EMAIL    "test@cb.org"
+        TEST-PASSWORD "secret"
+        tx            (person.data/new-person-tx #:person{:name     "Test Person"
+                                                          :email    TEST-EMAIL
+                                                          :password TEST-PASSWORD})]
 
     (is (s/valid? :bridge/new-person-tx tx))
     (is (= :status/active (:person/status tx)))
 
     (let [db       (db-after-tx [tx])
-          person   (d/entity db [:person/email "test@cg.org"])
-          password (person.data/password-for-active-person-by-email db "test@cg.org")]
+          person   (d/entity db [:person/email TEST-EMAIL])
+          password (person.data/password-for-active-person-by-email db TEST-EMAIL)]
 
       (is (some? person))
-      (is (person.data/correct-password? password "secret"))
+      (is (person.data/correct-password? password TEST-PASSWORD))
       (is (not (person.data/correct-password? password "wrong")))
 
       )))

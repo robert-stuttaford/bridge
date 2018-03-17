@@ -1,7 +1,7 @@
 (ns bridge.test.util
-  (:require [clojure.spec.alpha :as s]
+  (:require [bridge.data.datomic :as datomic]
+            [clojure.spec.alpha :as s]
             clojure.test
-            [clojure.tools.logging :as logging]
             [datomic.api :as d]
             [orchestra.spec.test :as sot]))
 
@@ -28,12 +28,13 @@
 
 (defn with-database [db-name schema]
   (fn [test-fn]
-    (let [uri     (str "datomic:mem://" db-name)
-          _       (d/delete-database uri)
-          _       (d/create-database uri)
-          conn    (d/connect uri)
-          _       @(d/transact conn schema)
-          result (test-fn)]
+    (let [uri    (str "datomic:mem://" db-name)
+          _      (d/delete-database uri)
+          _      (d/create-database uri)
+          conn   (d/connect uri)
+          _      @(d/transact conn schema)
+          result (datomic/with-datomic-mode :peer
+                   (test-fn))]
       (d/release conn)
       (d/delete-database uri)
       result)))

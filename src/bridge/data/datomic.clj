@@ -21,11 +21,35 @@
   (merge (select-keys config [:datomic/mode])
          (init-datomic-conn! config)))
 
-(defn db [{:datomic/keys [mode conn]}]
-  (case mode
+(declare db)
+
+(def ^:dynamic *DATOMIC-MODE* nil)
+
+(defmacro with-datomic-mode [mode & body]
+  `(binding [*DATOMIC-MODE* ~mode]
+     ~@body))
+
+(defn wrap-datomic [handler {:datomic/keys [mode conn] :as datomic}]
+  (fn [request]
+    (with-datomic-mode mode
+      (handler (merge request datomic {:datomic/db (db conn)})))))
+
+(defn db [conn]
+  (case *DATOMIC-MODE*
     :peer   (d/db conn)
     :client (dc/db conn)))
 
-(defn wrap-datomic [handler datomic]
-  (fn [request]
-    (handler (merge request datomic {:datomic/db (db datomic)}))))
+(defn transact! [conn tx]
+  (case *DATOMIC-MODE*
+    :peer   @(d/transact conn tx)
+    :client (dc/transact conn {:tx-data tx})))
+
+(defn entid [db id]
+  (case *DATOMIC-MODE*
+    :peer   (d/entid db id)
+    :client (:db/id (dc/pull db [:db/id] id))))
+
+(defn q [& args]
+  (case *DATOMIC-MODE*
+    :peer   (apply d/q args)
+    :client (apply dc/q args)))

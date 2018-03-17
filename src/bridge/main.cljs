@@ -4,7 +4,9 @@
 (enable-console-print!)
 
 (rum/defc app []
-  [:div "Hello"])
+  [:div "Hello"
+   [:br]
+   [:a {:href "/logout"} "Logout"]])
 
 (defn ^:export refresh []
   (rum/mount (app) (js/document.getElementById "mount")))

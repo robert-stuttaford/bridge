@@ -1,14 +1,18 @@
 (ns bridge.person.data
-  (:require bridge.spec
+  (:require [bridge.data.datomic :as datomic]
+            bridge.spec
             [buddy.core.codecs :as buddy.codecs]
             [buddy.core.nonce :as buddy.nonce]
             [buddy.hashers :as hashers]
             [clojure.spec.alpha :as s]
-            [clojure.string :as str]
-            [datomic.api :as d]))
+            [clojure.string :as str]))
 
 (def schema
-  [{:db/ident       :person/email
+  [{:db/ident       :person/name
+    :db/cardinality :db.cardinality/one
+    :db/valueType   :db.type/string}
+
+   {:db/ident       :person/email
     :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/string
     :db/unique      :db.unique/value}
@@ -47,23 +51,28 @@
       (merge #:person{:status :status/active
                       :email-confirm-token (nonce)})))
 
+(defn person-id-by-email [db email]
+  (datomic/entid db [:person/email email]))
+
 (defn password-for-active-person-by-email [db email]
-  (d/q '[:find ?password .
-         :in $ ?email
-         :where
-         [?person :person/email ?email]
-         [?person :person/status :status/active]
-         [?person :person/password ?password]]
-       db (clean-email email)))
+  (datomic/q '[:find ?password .
+               :in $ ?email
+               :where
+               [?person :person/email ?email]
+               [?person :person/status :status/active]
+               [?person :person/password ?password]]
+             db (clean-email email)))
 
 (defn correct-password? [person-password check-password]
   (hashers/check check-password person-password))
 
+(s/def :person/name :bridge.spec/required-string)
 (s/def :person/email :bridge.spec/email)
 (s/def :person/password :bridge.spec/required-string)
 
 (s/def :bridge/new-person
-  (s/keys :req [:person/email
+  (s/keys :req [:person/name
+                :person/email
                 :person/password]))
 
 (s/def :person/status

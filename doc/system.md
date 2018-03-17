@@ -3,7 +3,7 @@
 ### Priorities
 
 Own profile access and management
-- Create
+- ~~Create~~
 - ~~Login~~
 
 New Events
