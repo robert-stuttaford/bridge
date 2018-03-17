@@ -2,7 +2,8 @@
   (:require [ataraxy.core :as ataraxy]
             [bridge.config :as config]
             [bridge.data.datomic :as data.datomic]
-            [bridge.web.access :as web.access]
+            [bridge.person.access :as person.access]
+            [bridge.person.access.common :as access.common]
             [bridge.web.client :as web.client]
             [bridge.web.debug :as web.debug]
             [buddy.auth :as buddy]
@@ -25,11 +26,11 @@
     (fn [{:keys [uri] :as req} _]
       (if (buddy/authenticated? req)
         {:status 403}
-        (response/redirect (web.access/login-uri uri))))}))
+        (response/redirect (access.common/login-uri uri))))}))
 
 (defmethod ig/init-key :service/handler [_ {:keys [cookie datomic]}]
   (-> (merge-with merge
-                  web.access/routes
+                  person.access/routes
                   web.client/routes
                   web.debug/routes)
       ataraxy/handler

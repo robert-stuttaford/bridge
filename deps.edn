@@ -43,7 +43,7 @@
  :aliases
  {:dev
   {:jvm-opts    ["-Dlogback.configurationFile=resources/logback.xml"]
-   :extra-paths ["dev"]
+   :extra-paths ["dev" "test"]
    :extra-deps
    {integrant/repl     {:mvn/version "0.3.0"}
     com.taoensso/tufte {:mvn/version "1.1.2"}}}

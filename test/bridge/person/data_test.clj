@@ -1,5 +1,6 @@
 (ns bridge.person.data-test
-  (:require [bridge.person.data :as person.data]
+  (:require [bridge.data.datomic :as datomic]
+            [bridge.person.data :as person.data]
             [bridge.test.util :refer [db test-setup with-database]]
             [clojure.spec.alpha :as s]
             [clojure.test :refer [deftest is use-fixtures]]
@@ -29,7 +30,8 @@
 
     (let [db       (db-after-tx [tx])
           person   (d/entity db [:person/email TEST-EMAIL])
-          password (person.data/password-for-active-person-by-email db TEST-EMAIL)]
+          password (datomic/attr db (:db/id (d/entity db [:person/email TEST-EMAIL]))
+                                 :person/password)]
 
       (is (some? person))
       (is (person.data/correct-password? password TEST-PASSWORD))

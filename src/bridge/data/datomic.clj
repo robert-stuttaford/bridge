@@ -53,3 +53,13 @@
   (case *DATOMIC-MODE*
     :peer   (apply d/q args)
     :client (apply dc/q args)))
+
+(defn pull [db pattern id]
+  (case *DATOMIC-MODE*
+    :peer   (d/pull db pattern id)
+    :client (dc/pull db pattern id)))
+
+(defn attr [db id attr]
+  (case *DATOMIC-MODE*
+    :peer   (attr (d/entity db id))
+    :client (attr (dc/pull db [attr] id))))
