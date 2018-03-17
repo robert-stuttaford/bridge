@@ -44,6 +44,11 @@
     :peer   @(d/transact conn tx)
     :client (dc/transact conn {:tx-data tx})))
 
+(defn with [conn tx]
+  (case *DATOMIC-MODE*
+    :peer   (d/with (d/db conn) tx)
+    :client (dc/with (dc/with-db conn) {:tx-data tx})))
+
 (defn entid [db id]
   (case *DATOMIC-MODE*
     :peer   (d/entid db id)

@@ -1,10 +1,9 @@
 (ns bridge.person.data-test
   (:require [bridge.data.datomic :as datomic]
             [bridge.person.data :as person.data]
-            [bridge.test.util :refer [db test-setup with-database]]
+            [bridge.test.util :refer [conn test-setup with-database]]
             [clojure.spec.alpha :as s]
-            [clojure.test :refer [deftest is use-fixtures]]
-            [datomic.api :as d])
+            [clojure.test :refer [deftest is use-fixtures]])
   (:import clojure.lang.ExceptionInfo))
 
 (def db-name (str *ns*))
@@ -13,7 +12,7 @@
 (use-fixtures :each (with-database db-name person.data/schema))
 
 (defn db-after-tx [tx]
-  (:db-after (d/with (db db-name) tx)))
+  (:db-after (datomic/with (conn db-name) tx)))
 
 (deftest new-person-tx
   (is (thrown-with-msg? ExceptionInfo #"did not conform to spec"
@@ -29,9 +28,8 @@
     (is (= :status/active (:person/status tx)))
 
     (let [db       (db-after-tx [tx])
-          person   (d/entity db [:person/email TEST-EMAIL])
-          password (datomic/attr db (:db/id (d/entity db [:person/email TEST-EMAIL]))
-                                 :person/password)]
+          person   (datomic/entid db [:person/email TEST-EMAIL])
+          password (datomic/attr db [:person/email TEST-EMAIL] :person/password)]
 
       (is (some? person))
       (is (person.data/correct-password? password TEST-PASSWORD))
