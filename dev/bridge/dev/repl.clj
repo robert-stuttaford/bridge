@@ -3,14 +3,8 @@
             [bridge.data.datomic :as datomic]
             [integrant.core :as ig]))
 
-;; uses Datomic Peer library
-
-(defn init-datomic []
-  (ig/init-key :datomic/connection
-               (:datomic/connection (config/system))))
-
 (defn set-datomic-mode! [mode]
-  (alter-var-root datomic/*DATOMIC-MODE* (constantly mode)))
+  (alter-var-root (var datomic/*DATOMIC-MODE*) (constantly mode)))
 
 (defn conn []
   (when (nil? datomic/*DATOMIC-MODE*)
@@ -18,7 +12,21 @@
                          "You can use `bridge.dev.repl/set-datomic-mode!` "
                          "to do so at the repl.")
                     {})))
-  (:datomic/conn (init-datomic)))
+  (-> (ig/init-key :datomic/connection
+                   (-> (:datomic/connection (config/system))
+                       (assoc :datomic/mode datomic/*DATOMIC-MODE*)))
+      :datomic/conn))
 
 (defn db []
   (datomic/db (conn)))
+
+(comment
+
+  (set-datomic-mode! :client)
+  (set-datomic-mode! :peer)
+
+  (conn)
+
+  (datomic/pull (db) '[*] [:person/email "test@cb.org"])
+
+  )

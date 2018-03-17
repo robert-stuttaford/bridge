@@ -5,10 +5,7 @@
 
 (defn add-person! [conn {:person/keys [email] :as new-person}]
   (when (nil? (person.data/person-id-by-email (datomic/db conn) email))
-    (let [new-person-tx (person.data/new-person-tx new-person
-                                                   #:person{:name     "Test Name"
-                                                            :email    "test@cb.org"
-                                                            :password "secret"})]
+    (let [new-person-tx (person.data/new-person-tx new-person)]
       (person.data/save-new-person! conn new-person-tx)
       (person.data/confirm-email! conn
                                   (person.data/person-id-by-email (datomic/db conn) email)

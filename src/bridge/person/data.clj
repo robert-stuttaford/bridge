@@ -57,7 +57,7 @@
 
 (defn save-new-person! [conn person-tx]
   (datomic/transact! conn [person-tx])
-  (let [{:person/keys [email email-confirm-token]} (:person/email person-tx)]
+  (let [{:person/keys [email email-confirm-token]} person-tx]
     (send-email! email (str "your email confirm token: " email-confirm-token))))
 
 (defn confirm-email! [conn person-id token]

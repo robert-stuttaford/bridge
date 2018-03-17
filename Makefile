@@ -23,4 +23,7 @@ uberjar:
 serve-jar:
 	source bridge.env && java -jar bridge.jar -m bridge.service
 
+peer-server:
+	source bridge.env && bash script/datomic-peer-server.sh
+
 pack: clean compile uberjar

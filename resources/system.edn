@@ -1,5 +1,5 @@
 {:datomic/connection
- {:datomic/mode :peer ;; or :client
+ {:datomic/mode :peer ;; :peer or :client
 
   ;; for :peer
   :uri          #dyn/prop BRIDGE_DATOMIC_URI

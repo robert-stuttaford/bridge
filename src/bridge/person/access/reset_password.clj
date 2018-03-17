@@ -40,12 +40,13 @@
    [:p.has-text-grey
     [:a {:href "/help"} "Need Help?"]]))
 
-(defn reset-password [{:keys [request-method]
-                       {:keys [reset-password-token password confirm-password]} :params
+(defn reset-password [{[_ token] :ataraxy/result
+                       :keys [request-method]
+                       {:keys [password confirm-password]} :params
                        :datomic/keys [conn db]}]
   (or (when (= :post request-method)
         (let [person-id (person.data/person-id-by-reset-password-token
-                         db reset-password-token)
+                         db token)
               password-error (person.data/valid-password? password confirm-password)]
           (cond (nil? person-id)
                 (reset-password-page :invalid-token)
@@ -55,8 +56,7 @@
 
                 :else
                 (try
-                  (person.data/reset-password! conn person-id reset-password-token
-                                               password)
+                  (person.data/reset-password! conn person-id token password)
 
                   (response/redirect (access.common/login-uri "/"))
 
