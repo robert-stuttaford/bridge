@@ -21,4 +21,7 @@
 
  :adapter/jetty
  {:port    8080
-  :handler #ig/ref :service/handler}}
+  :handler #ig/ref :service/handler}
+
+ :datomic/dev-data
+ {:datomic #ig/ref :datomic/connection}}

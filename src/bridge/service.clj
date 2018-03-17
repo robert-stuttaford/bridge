@@ -24,7 +24,7 @@
     (fn [{:keys [uri] :as req} _]
       (if (buddy/authenticated? req)
         {:status 403}
-        (response/redirect (web.access/login-uri uri) )))}))
+        (response/redirect (web.access/login-uri uri))))}))
 
 (defmethod ig/init-key :service/handler [_ {:keys [cookie datomic]}]
   (-> (merge-with merge
