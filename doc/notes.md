@@ -11,3 +11,13 @@ cliff notes:
 - normalise all inputs
   - `(java.text.Normalizer/normalize s java.text.Normalizer$Form/NFC)`
 
+# generate emails
+
+```clojure
+(spec/def :user/email
+  (spec/with-gen
+    (spec/and string? #(str/includes? % "@"))
+    #(chuck/string-from-regex #"[a-z0-9]{3,6}@[a-z0-9]{3,6}\.(com|es|org)")))
+```
+
+`[com.gfredericks/test.chuck "0.2.8"]`
