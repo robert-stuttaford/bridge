@@ -23,9 +23,9 @@ All chapters management
 
 #### Profiles (all users)
 
-- Create profile
-- Login
-- Reset password
+- ~~Create profile~~
+- ~~Login~~
+- ~~Reset password~~
 - Update profile details
 - Delete profile
 - Views
