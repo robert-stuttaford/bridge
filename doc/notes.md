@@ -13,6 +13,8 @@ cliff notes:
 
 # generate emails
 
+Joel Sánchez @JoelSanchezDev
+
 ```clojure
 (spec/def :user/email
   (spec/with-gen
@@ -21,3 +23,7 @@ cliff notes:
 ```
 
 `[com.gfredericks/test.chuck "0.2.8"]`
+
+# depstar
+
+https://github.com/healthfinch/depstar instead of pack.alpha?
