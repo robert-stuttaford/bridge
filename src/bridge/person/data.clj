@@ -14,7 +14,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Crypto
 
-(defn nonce []
+(defn ^:dynamic nonce []
   (-> (buddy.nonce/random-nonce 32)
       buddy.codecs/bytes->hex))
 
