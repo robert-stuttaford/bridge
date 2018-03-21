@@ -28,14 +28,14 @@
 (deftest nonce
   (is (s/valid? :bridge.spec/nonce (person.data/nonce))))
 
-(deftest valid-password?
-  (is (nil? (person.data/valid-password? "abcdefgh" "abcdefgh")))
+(deftest check-password-validity
+  (is (nil? (person.data/check-password-validity "abcdefgh" "abcdefgh")))
 
   (is (= :password-too-short
-         (person.data/valid-password? "" "")))
+         (person.data/check-password-validity "" "")))
 
   (is (= :passwords-do-not-match
-         (person.data/valid-password? "abcdefgh"
+         (person.data/check-password-validity "abcdefgh"
                                       "ABCDEFGH"))))
 
 (deftest hash-and-check-password

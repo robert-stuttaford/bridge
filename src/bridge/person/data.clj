@@ -20,7 +20,7 @@
 
 (def hash-password hashers/derive)
 
-(defn valid-password? [password confirm-password]
+(defn check-password-validity [password confirm-password]
   (cond (< (count password) 8)           :password-too-short
         (not= password confirm-password) :passwords-do-not-match
         :else                            nil))

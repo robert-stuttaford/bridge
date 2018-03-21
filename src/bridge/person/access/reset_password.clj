@@ -47,7 +47,7 @@
   (or (when (= :post request-method)
         (let [person-id (person.data/person-id-by-reset-password-token
                          db token)
-              password-error (person.data/valid-password? password confirm-password)]
+              password-error (person.data/check-password-validity password confirm-password)]
           (cond (nil? person-id)
                 (reset-password-page :invalid-token)
 

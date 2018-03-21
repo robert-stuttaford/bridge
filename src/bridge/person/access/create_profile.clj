@@ -76,7 +76,7 @@
 
               {:keys [name email password confirm-password]} params
 
-              password-error (person.data/valid-password? password confirm-password)]
+              password-error (person.data/check-password-validity password confirm-password)]
           (cond (some? (person.data/person-id-by-email db email))
                 (create-profile-page :account-exists)
 
