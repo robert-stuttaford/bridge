@@ -20,7 +20,9 @@
 
 (def TEST-EMAIL "test@cb.org")
 (def TEST-PASSWORD "secret")
-(def TEST-NEW-PERSON-TX
+(defn TEST-NEW-PERSON-TX
+  "A function, so that spec instrumentation has a chance to work"
+  []
   (person.data/new-person-tx #:person{:name     "Test Person"
                                       :email    TEST-EMAIL
                                       :password TEST-PASSWORD}))
@@ -47,36 +49,40 @@
   (is (thrown-with-msg? ExceptionInfo #"did not conform to spec"
                         (person.data/new-person-tx {})))
 
-  (is (s/valid? :bridge/new-person-tx TEST-NEW-PERSON-TX))
-  (is (= :status/active (:person/status TEST-NEW-PERSON-TX))))
+  (is (s/valid? :bridge/new-person-tx (TEST-NEW-PERSON-TX)))
+  (is (= :status/active (:person/status (TEST-NEW-PERSON-TX)))))
 
 (deftest save-person!
 
-  (person.data/save-new-person! (conn db-name) TEST-NEW-PERSON-TX)
+  (let [new-person-tx (TEST-NEW-PERSON-TX)]
 
-  (let [new-db (db db-name)]
-    (is (person.data/person-id-by-email new-db TEST-EMAIL))
-    (is (person.data/person-id-by-confirm-email-token
-         new-db (:person/confirm-email-token TEST-NEW-PERSON-TX)))))
+    (person.data/save-new-person! (conn db-name) new-person-tx)
+
+    (let [new-db (db db-name)]
+      (is (person.data/person-id-by-email new-db TEST-EMAIL))
+      (is (person.data/person-id-by-confirm-email-token
+           new-db (:person/confirm-email-token new-person-tx))))))
 
 (deftest confirm-email!
-  (person.data/save-new-person! (conn db-name) TEST-NEW-PERSON-TX)
 
-  (person.data/confirm-email! (conn db-name)
-                              (person.data/person-id-by-email (db db-name) TEST-EMAIL)
-                              (:person/confirm-email-token TEST-NEW-PERSON-TX))
+  (let [new-person-tx (TEST-NEW-PERSON-TX)]
+    (person.data/save-new-person! (conn db-name) new-person-tx)
 
-  (let [new-db (db db-name)]
-    (is (nil? (person.data/person-id-by-confirm-email-token
-               new-db (:person/confirm-email-token TEST-NEW-PERSON-TX))))
+    (person.data/confirm-email! (conn db-name)
+                                (person.data/person-id-by-email (db db-name) TEST-EMAIL)
+                                (:person/confirm-email-token new-person-tx))
 
-    (is (nil? (datomic/attr new-db (person.data/person-id-by-email new-db TEST-EMAIL)
-                            :person/confirm-email-token)))))
+    (let [new-db (db db-name)]
+      (is (nil? (person.data/person-id-by-confirm-email-token
+                 new-db (:person/confirm-email-token new-person-tx))))
+
+      (is (nil? (datomic/attr new-db (person.data/person-id-by-email new-db TEST-EMAIL)
+                              :person/confirm-email-token))))))
 
 (def mock-nonce (constantly (person.data/nonce)))
 
 (deftest request-reset-password!
-  (person.data/save-new-person! (conn db-name) TEST-NEW-PERSON-TX)
+  (person.data/save-new-person! (conn db-name) (TEST-NEW-PERSON-TX))
 
   (binding [person.data/nonce mock-nonce]
     (person.data/request-password-reset!
@@ -93,7 +99,7 @@
              token)))))
 
 (deftest reset-password!
-  (person.data/save-new-person! (conn db-name) TEST-NEW-PERSON-TX)
+  (person.data/save-new-person! (conn db-name) (TEST-NEW-PERSON-TX))
 
   (binding [person.data/nonce mock-nonce]
     (person.data/request-password-reset!
