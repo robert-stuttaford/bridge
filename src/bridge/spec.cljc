@@ -27,7 +27,7 @@
   #(re-matches nonce-regex %))
 
 (def slug-regex
-  #"[0-9a-f-]+")
+  #"[0-9a-z-]+")
 
 (s/def ::slug
   #(re-matches slug-regex %))
@@ -70,4 +70,4 @@
 
 (s/def :bridge.datomic/ref
   (s/or :id :bridge.datomic/id
-        :map (s/map-of :keyword :bridge.datomic/value)))
+        :map (s/map-of keyword? :bridge.datomic/value)))
