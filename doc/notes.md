@@ -27,3 +27,7 @@ Joel Sánchez @JoelSanchezDev
 # depstar
 
 https://github.com/healthfinch/depstar instead of pack.alpha?
+
+# datomic layer
+
+- automatically track all calls for a request, and present this info in the response
