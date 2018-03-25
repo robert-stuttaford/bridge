@@ -28,8 +28,17 @@
         {:status 403}
         (response/redirect (access.common/login-uri uri))))}))
 
+(def common-routing
+  {:middleware
+   {:authorized? (fn [handler]
+                   (fn [request]
+                     (if-not (buddy/authenticated? request)
+                       (buddy/throw-unauthorized)
+                       (handler request))))}})
+
 (defmethod ig/init-key :service/handler [_ {:keys [cookie datomic]}]
   (-> (merge-with merge
+                  common-routing
                   person.access/routes
                   web.client/routes
                   web.debug/routes)
