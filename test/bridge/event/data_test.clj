@@ -1,5 +1,6 @@
 (ns bridge.event.data-test
-  (:require [bridge.data.dev-data :as dev-data]
+  (:require [bridge.chapter.data :as chapter.data]
+            [bridge.data.dev-data :as dev-data]
             [bridge.data.slug :as slug]
             [bridge.event.data :as event.data]
             [bridge.person.data :as person.data]
@@ -23,19 +24,33 @@
 
     (test-fn)))
 
+(defn chapter-fixtures [db-name]
+  (fn [test-fn]
+    (let [conn (conn db-name)]
+      @(d/transact conn chapter.data/schema)
+
+      (dev-data/add-chapter! conn [:person/email "test@cb.org"]
+                             #:chapter{:title    "ClojureBridge Hermanus"
+                                       :location "Hermanus"}))
+
+    (test-fn)))
+
 (use-fixtures :once test-setup)
 (use-fixtures :each (join-fixtures [(with-database db-name event.data/schema)
-                                    (person-fixtures db-name)]))
+                                    (person-fixtures db-name)
+                                    (chapter-fixtures db-name)]))
+
+(def TEST-CHAPTER-ID [:chapter/slug "clojurebridge-hermanus"])
+(def TEST-PERSON-ID [:person/email "test@cb.org"])
 
 (def TEST-EVENT-TITLE "April Event")
 (def TEST-EVENT-SLUG (slug/->slug TEST-EVENT-TITLE))
-(def TEST-PERSON-ID [:person/email "test@cb.org"])
 
 (defn TEST-NEW-EVENT-TX
   "A function, so that spec instrumentation has a chance to work"
   []
-  (event.data/new-event-tx TEST-PERSON-ID
-                           #:event{:title      "April Event"
+  (event.data/new-event-tx TEST-CHAPTER-ID TEST-PERSON-ID
+                           #:event{:title      TEST-EVENT-TITLE
                                    :start-date #inst "2018-04-06"
                                    :end-date   #inst "2018-04-07"}))
 
