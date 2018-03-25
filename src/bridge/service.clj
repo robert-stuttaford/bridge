@@ -19,7 +19,8 @@
             [ring.middleware.stacktrace :as ring.stacktrace]
             [ring.util.response :as response]))
 
-(require 'bridge.web.jetty)
+(require 'bridge.event.api
+         'bridge.web.jetty)
 
 (def auth-backend
   (buddy.session/session-backend
