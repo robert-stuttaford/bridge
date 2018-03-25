@@ -4,6 +4,7 @@
             [bridge.data.datomic :as data.datomic]
             [bridge.person.access :as person.access]
             [bridge.person.access.common :as access.common]
+            [bridge.web.api :as web.api]
             [bridge.web.client :as web.client]
             [bridge.web.debug :as web.debug]
             [buddy.auth :as buddy]
@@ -40,6 +41,7 @@
   (-> (merge-with merge
                   common-routing
                   person.access/routes
+                  web.api/routes
                   web.client/routes
                   web.debug/routes)
       ataraxy/handler
