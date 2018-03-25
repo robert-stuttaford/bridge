@@ -31,3 +31,12 @@ https://github.com/healthfinch/depstar instead of pack.alpha?
 # datomic layer
 
 - automatically track all calls for a request, and present this info in the response
+
+# client
+
+evaluate https://github.com/Day8/re-frame
+
+routing https://pupeno.com/2015/08/26/no-hashes-bidirectional-routing-in-re-frame-with-bidi-and-pushy/
+http https://github.com/Day8/re-frame-http-fx
+debug https://github.com/Day8/re-frame-10x
+testing https://github.com/Day8/re-frame-test
