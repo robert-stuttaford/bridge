@@ -1,6 +1,5 @@
 (ns bridge.web.api
-  (:require [bridge.web.api.base :as api.base]
-            [clojure.edn :as edn]))
+  (:require [bridge.web.api.base :as api.base]))
 
 ;; TODO use `transit` in production
 
@@ -20,4 +19,3 @@
    '{[:post "/client/api"] ^:authorized? [:client-api]}
    :handlers
    {:client-api  #'handle-api}})
-

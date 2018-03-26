@@ -16,11 +16,10 @@
                              {:keys [identity]} :session
                              :as request}]
   (merge (edn/read-string body)
-         (select-keys [:datomic/db :datomic/conn] request)
+         (select-keys request [:datomic/db :datomic/conn])
          {:active-user-id identity}))
 
-(defn api-with-new-payload [orig-payload new-payload]
+(defn new-payload [orig-payload new-payload]
   (-> orig-payload
       (select-keys [:datomic/db :datomic/conn :active-user-id])
-      (merge new-payload)
-      api))
+      (merge new-payload)))

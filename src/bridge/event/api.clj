@@ -18,7 +18,8 @@
             (event.data/new-event-tx chapter-id active-user-id new-event)
 
             {db :db-after} (event.data/save-new-event! conn event-tx)]
-        (api.base/api-with-new-payload orig-payload
-                                       {:datomic/db db
-                                        :action     ::edit-event
-                                        :event-slug slug}))))
+        (-> orig-payload
+            (api.base/new-payload {:datomic/db db
+                                   :action     ::edit-event
+                                   :event-slug slug})
+            api.base/api))))

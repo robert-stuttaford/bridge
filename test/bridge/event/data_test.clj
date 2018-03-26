@@ -67,3 +67,49 @@
 
   (let [new-db (db db-name)]
     (is (event.data/event-id-by-slug new-db TEST-EVENT-SLUG))))
+
+(deftest person-is-organiser?
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (let [new-db (db db-name)]
+    (is (true? (event.data/person-is-organiser?
+                new-db
+                (event.data/event-id-by-slug new-db TEST-EVENT-SLUG)
+                TEST-PERSON-ID)))
+
+    (is (false? (event.data/person-is-organiser?
+                 new-db
+                 (event.data/event-id-by-slug new-db TEST-EVENT-SLUG)
+                 123)))))
+
+(deftest check-event-organiser
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (let [new-db (db db-name)]
+    (is (nil? (event.data/check-event-organiser
+               new-db
+               (event.data/event-id-by-slug new-db TEST-EVENT-SLUG)
+               TEST-PERSON-ID)))
+
+    (is (= {:error :bridge/not-event-organiser}
+           (event.data/check-event-organiser
+            new-db
+            (event.data/event-id-by-slug new-db TEST-EVENT-SLUG)
+            123)))))
+
+(deftest event-for-editing
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (let [new-db (db db-name)
+        for-editing (->> TEST-EVENT-SLUG
+                         (event.data/event-id-by-slug new-db)
+                         (event.data/event-for-editing new-db))]
+    (is (= (get-in for-editing [:event/chapter :chapter/slug])
+           "clojurebridge-hermanus"))
+    (is (= (->  for-editing :event/organisers first :person/name)
+           "Test Name"))
+    ))
+
