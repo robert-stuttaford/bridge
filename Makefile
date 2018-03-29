@@ -20,6 +20,9 @@ compile:
 uberjar:
 	clojure -A\:uberjar
 
+outdated:
+	clojure -Aoutdated -a outdated
+
 serve-jar:
 	source bridge.env && java -jar bridge.jar -m bridge.service
 

@@ -4,19 +4,19 @@
 
   ;; For use with Spec
   org.clojure/test.check {:mvn/version "0.9.0"}
-  expound                {:mvn/version "0.3.1"}
+  expound                {:mvn/version "0.5.0"}
   orchestra              {:mvn/version "2017.11.12-1"}
 
   buddy/buddy-auth         {:mvn/version "2.1.0"}
   buddy/buddy-hashers      {:mvn/version "1.3.0"}
   integrant                {:mvn/version "0.6.3"}
   clj-time                 {:mvn/version "0.14.2"}
-  com.datomic/datomic-free {:mvn/version "0.9.5656" :exclusions
+  com.datomic/datomic-free {:mvn/version "0.9.5697" :exclusions
                             [org.slf4j/slf4j-log4j12
                              org.slf4j/slf4j-nop]}
   com.datomic/client-pro   {:mvn/version "0.8.14"}
 
-  ch.qos.logback/logback-classic {:mvn/version "1.1.7" :exclusions
+  ch.qos.logback/logback-classic {:mvn/version "1.2.3" :exclusions
                                   [org.slf4j/slf4j-api]}
   org.clojure/tools.logging      {:mvn/version "0.4.0"}
 
@@ -30,13 +30,13 @@
   ring/ring-devel                {:mvn/version "1.6.3"}
 
   ;; Cljs
-  org.clojure/clojurescript {:mvn/version "1.10.64"}
-  figwheel-sidecar          {:mvn/version "0.5.14" :exclusions
+  org.clojure/clojurescript {:mvn/version "1.10.238"}
+  figwheel-sidecar          {:mvn/version "0.5.15" :exclusions
                              [com.google.javascript/closure-compiler]}
-  rum                       {:mvn/version "0.11.1"}
+  rum                       {:mvn/version "0.11.2"}
 
   ;; REPL
-  org.clojure/tools.nrepl {:mvn/version "0.2.12"}
+  org.clojure/tools.nrepl {:mvn/version "0.2.13"}
   cider/cider-nrepl       {:mvn/version "0.17.0-SNAPSHOT"}
   refactor-nrepl          {:mvn/version "2.4.0-SNAPSHOT"}}
 
@@ -47,6 +47,10 @@
    :extra-deps
    {integrant/repl     {:mvn/version "0.3.0"}
     com.taoensso/tufte {:mvn/version "1.1.2"}}}
+
+  :outdated
+  {:extra-deps {olical/depot {:mvn/version "1.0.1"}}
+   :main-opts  ["-m" "depot.outdated.main"]}
 
   :test
   {:extra-paths ["test"]
