@@ -1,0 +1,18 @@
+{
+  "folders":
+  [
+    {
+      "file_exclude_patterns":
+      [
+        "figwheel_server.log"
+      ],
+      "folder_exclude_patterns":
+      [
+        ".cpcache",
+        "target",
+        "resources/js"
+      ],
+      "path": "."
+    }
+  ]
+}

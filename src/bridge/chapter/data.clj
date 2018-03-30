@@ -42,15 +42,6 @@
 (defn save-new-chapter! [conn chapter-tx]
   (datomic/transact! conn [chapter-tx]))
 
-(comment
-
-  (orchestra.spec.test/instrument)
-
-  (new-chapter-tx [:person/email "test@cb.org"]
-                  #:chapter{:title    "ClojureBridge Hermanus"
-                            :location "Hermanus"})
-  )
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Schema
 
