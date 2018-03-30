@@ -2,7 +2,7 @@
   #?@
    (:clj
     [(:require [clojure.spec.alpha :as s] [clojure.string :as str])
-     (:import datomic.Database)]
+     (:import datomic.client.impl.shared.protocols.Db datomic.Database)]
     :cljs
     [(:require [clojure.spec.alpha :as s] [clojure.string :as str])]))
 
@@ -105,7 +105,9 @@
   (s/keys :req [:field/entity-id :field/attr :field/value]
           :opt [:field/retract?]))
 
-(s/def :bridge/error keyword?)
+(s/def :bridge/error
+  (s/and keyword?
+         #(= (namespace %) "bridge.error")))
 
 (s/def :bridge/error-result
   (s/keys :req-un [:bridge/error]))

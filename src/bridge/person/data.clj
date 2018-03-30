@@ -46,7 +46,7 @@
 
 (defn send-email! [email body]
   ;; TODO actually send `body` to `email`
-  (logging/info :send-email! email body))
+  (logging/debug :send-email! email body))
 
 (defn new-person-tx [person]
   (-> (s/assert :bridge/new-person person)

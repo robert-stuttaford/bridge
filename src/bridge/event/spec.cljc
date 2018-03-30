@@ -8,7 +8,9 @@
 (s/def :event/title :bridge.spec/required-string)
 (s/def :event/slug :bridge.spec/slug)
 (s/def :event/chapter :bridge.datomic/ref)
-(s/def :event/organisers (s/coll-of :bridge.datomic/ref :min-count 1))
+(s/def :event/organisers
+  (s/or :ref :bridge.datomic/ref
+        :ref-coll (s/coll-of :bridge.datomic/ref :min-count 1)))
 (s/def :event/start-date inst?)
 (s/def :event/end-date inst?)
 (s/def :event/registration-close-date inst?)
