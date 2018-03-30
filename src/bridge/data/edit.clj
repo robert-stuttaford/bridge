@@ -4,6 +4,8 @@
             [clojure.spec.alpha :as s]
             [clojure.string :as str]))
 
+(require 'bridge.data.edit.spec)
+
 (defmulti check-custom-validation
   (fn [db {:field/keys [attr]}]
     attr))

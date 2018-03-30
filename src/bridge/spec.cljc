@@ -1,10 +1,6 @@
 (ns bridge.spec
-  #?@
-   (:clj
-    [(:require [clojure.spec.alpha :as s] [clojure.string :as str])
-     (:import datomic.client.impl.shared.protocols.Db datomic.Database)]
-    :cljs
-    [(:require [clojure.spec.alpha :as s] [clojure.string :as str])]))
+  (:require [clojure.spec.alpha :as s]
+            [clojure.string :as str]))
 
 (def not-blank? (complement str/blank?))
 
@@ -37,73 +33,7 @@
   #(re-matches slug-regex %))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Datomic transactions and pull results
-
-;; Only used server-side
-
-#?(:clj
-   (s/def :bridge.datomic/db
-     (s/or :peer #(instance? datomic.Database %)
-           :client #(satisfies? datomic.client.impl.shared.protocols.Db %))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Datomic transactions and pull results
-
-(s/def :bridge.datomic/scalar-value
-  (s/or :long integer?
-        :instant inst?
-        :string string?
-        :boolean boolean?
-        :keyword keyword?))
-
-(s/def :bridge.datomic/value
-  (s/or :scalar :bridge.datomic/scalar-value
-        :ref :bridge.datomic/ref
-        :ref-coll (s/coll-of :bridge.datomic/ref)))
-
-(s/def :bridge.datomic/partitioned-tempid
-  (s/keys :req-un [:bridge.datomic.tempid/part :bridge.datomic.tempid/idx]))
-
-(s/def :bridge.datomic.tempid/part #{:db.part/user})
-(s/def :bridge.datomic.tempid/idx neg-int?)
-
-(s/def :bridge.datomic/tempid
-  (s/or :string ::required-string
-        :partition :bridge.datomic/partitioned-tempid))
-
-(s/def :bridge.datomic/lookup-ref
-  (s/tuple :bridge.datomic.lookup-ref/attr :bridge.datomic.lookup-ref/val))
-
-(s/def :bridge.datomic.lookup-ref/attr keyword?)
-(s/def :bridge.datomic.lookup-ref/val :bridge.datomic/scalar-value)
-
-(s/def :bridge.datomic/stored-id
-  (s/or :lookup-ref :bridge.datomic/lookup-ref
-        :id pos-int?))
-
-(s/def :bridge.datomic/id
-  (s/or :tempid :bridge.datomic/tempid
-        :stored-id :bridge.datomic/stored-id))
-
-(s/def :bridge.datomic/ref
-  (s/or :id :bridge.datomic/id
-        :map (s/map-of keyword? :bridge.datomic/value)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Field edit operations
-
-(s/def :field/entity-id :bridge.datomic/stored-id)
-(s/def :field/attr keyword?)
-(s/def :field/value
-  (s/or :scalar :bridge.datomic/scalar-value
-        :lookup-ref :bridge.datomic/lookup-ref
-        :lookup-ref-coll (s/coll-of :bridge.datomic/lookup-ref)))
-
-(s/def :field/retract? boolean?)
-
-(s/def :bridge/edit-field-operation
-  (s/keys :req [:field/entity-id :field/attr :field/value]
-          :opt [:field/retract?]))
+;;; Errors
 
 (s/def :bridge/error
   (s/and keyword?

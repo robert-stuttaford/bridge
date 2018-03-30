@@ -3,6 +3,8 @@
             [datomic.client.api :as dc]
             [integrant.core :as ig]))
 
+(require 'bridge.data.datomic.spec)
+
 (defmulti init-datomic-conn! :datomic/mode)
 
 (defmethod init-datomic-conn! :default [config]
