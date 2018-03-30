@@ -52,7 +52,7 @@
 (s/def :bridge.datomic/scalar-value
   (s/or :long integer?
         :instant inst?
-        :string ::required-string
+        :string string?
         :boolean boolean?
         :keyword keyword?))
 

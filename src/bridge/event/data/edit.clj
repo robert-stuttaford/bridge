@@ -1,9 +1,6 @@
- (ns bridge.event.data.edit
+(ns bridge.event.data.edit
   (:require [bridge.data.datomic :as datomic]
-            [bridge.data.edit :as data.edit]
-            [clj-time.core :as t]))
-
-(require 'bridge.event.spec)
+            [bridge.data.edit :as data.edit]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Edit
@@ -53,8 +50,8 @@
 
           (not (contains? possible-next-status value))
           {:error                :bridge.event.error/invalid-next-status
-           :possible-next-status possible-next-status
-           :event/status         value})))
+           :event/status         value
+           :possible-next-status possible-next-status})))
 
 ;;; :event/organisers
 
@@ -65,23 +62,3 @@
         {:error            :bridge.event.error/event-can-not-have-no-organisers
          :field/retract?   true
          :event/organisers value}))
-
-(comment
-
-  (data.edit/check-field-update db edit-whitelist
-                                #:field{:attr      .
-                                        :value     .
-                                        :entity-id .})
-
-  :event/organisers               ; add/remove
-  :event/details-markdown         ; edit, blank = auto retract
-  :event/notes-markdown           ; edit, blank = auto retract
-
-  (require '[bridge.dev.repl :as repl])
-
-  (repl/set-datomic-mode! :peer)
-
-  (def db (repl/db))
-  (def attr :chapter/slug)
-  (def value "clojurebridge-hermanus")
-  )

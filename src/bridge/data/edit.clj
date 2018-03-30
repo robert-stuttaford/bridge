@@ -1,6 +1,8 @@
 (ns bridge.data.edit
   (:require [bridge.data.datomic :as datomic]
-            [clojure.spec.alpha :as s]))
+            [bridge.data.string :as string]
+            [clojure.spec.alpha :as s]
+            [clojure.string :as str]))
 
 (defmulti check-custom-validation
   (fn [db {:field/keys [attr]}]
@@ -32,14 +34,14 @@
      :spec-error  (s/explain-data attr value)}))
 
 (defn check-field-update:uniqueness-conflict [db {:field/keys [attr value]}]
-  (when (and (some? (datomic/attr db attr :db/unique))
+  (when (and (datomic/attr-is-unique? db attr)
              (some? (datomic/entid db [attr value])))
     {:error       :bridge.error/uniqueness-conflict
      :field/attr  attr
      :field/value value}))
 
 (defn check-field-update:missing-referent [db {:field/keys [attr value]}]
-  (when (and (= (datomic/attr db attr :db/valueType) :db.type/ref)
+  (when (and (datomic/attr-is-ref? db attr)
              (nil? (datomic/entid db value)))
     {:error       :bridge.error/missing-referent
      :field/attr  attr
@@ -60,3 +62,23 @@
                      :edit-field :bridge/edit-field-operation)
         :ret (s/or :valid nil?
                    :invalid :bridge/error-result))
+
+(defn update-field-value-tx [db {:field/keys [entity-id attr value retract?]}]
+  (if (and (= (datomic/attr-type db attr) :db.type/string)
+           (str/blank? value))
+    (when-some [existing-value (-> (datomic/attr db entity-id attr)
+                                   string/not-blank)]
+      [:db/retract entity-id attr existing-value])
+    [(if retract? :db/retract :db/add) entity-id attr value]))
+
+(s/fdef update-field-value-tx
+        :args (s/cat :db :bridge.datomic/db
+                     :edit-field :bridge/edit-field-operation)
+        :ret (s/tuple #{:db/add :db/retract}
+                      :bridge.datomic/stored-id
+                      keyword?
+                      :bridge.datomic/scalar-value))
+
+(defn update-field-value! [conn db attr-whitelist field]
+  (or (check-field-update db attr-whitelist field)
+      (datomic/transact! conn [(update-field-value-tx db field)])))

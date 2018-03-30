@@ -64,7 +64,16 @@
     :peer   (d/pull db pattern id)
     :client (dc/pull db pattern id)))
 
-(defn attr [db id attr]
+(defn attr [db id attr-name]
   (case *DATOMIC-MODE*
-    :peer   (attr (d/entity db id))
-    :client (attr (dc/pull db [attr] id))))
+    :peer   (attr-name (d/entity db id))
+    :client (attr-name (dc/pull db [attr-name] id))))
+
+(defn attr-type [db attr-name]
+  (attr db attr-name :db/valueType))
+
+(defn attr-is-unique? [db attr-name]
+  (some? (attr db attr-name :db/unique)))
+
+(defn attr-is-ref? [db attr-name]
+  (= (attr-type db attr-name) :db.type/ref))

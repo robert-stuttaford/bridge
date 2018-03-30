@@ -1,5 +1,6 @@
 (ns bridge.data.edit-test
-  (:require [bridge.data.edit :as data.edit]
+  (:require [bridge.data.datomic :as datomic]
+            [bridge.data.edit :as data.edit]
             [bridge.data.slug :as slug]
             [bridge.event.data :as event.data]
             [bridge.test.fixtures
@@ -7,9 +8,9 @@
              fixtures
              :refer
              [TEST-CHAPTER-ID TEST-PERSON-ID]]
-            [bridge.test.util :refer [db test-setup with-database]]
-            [clojure.test :refer [deftest is join-fixtures testing use-fixtures]]
-            [clojure.spec.alpha :as s])
+            [bridge.test.util :refer [conn db test-setup with-database]]
+            [clojure.spec.alpha :as s]
+            [clojure.test :refer [deftest is join-fixtures use-fixtures]])
   (:import clojure.lang.ExceptionInfo))
 
 (def db-name (str *ns*))
@@ -144,18 +145,55 @@
                           :attr      :test-custom-correct-error-data
                           :value     1}))))
 
-(comment
+(deftest update-field-value-tx
+  (is (= [:db/add 1 :event/title "title"]
+         (data.edit/update-field-value-tx
+          (db db-name)
+          #:field{:entity-id 1
+                  :attr      :event/title
+                  :value     "title"})))
 
-  (require '[bridge.dev.repl :as repl])
+  (is (= [:db/retract [:event/slug "test-event"] :attr "abc"]
+         (data.edit/update-field-value-tx
+          (db db-name)
+          #:field{:entity-id [:event/slug "test-event"]
+                  :attr      :attr
+                  :value     "abc"
+                  :retract?  true})))
 
-  (repl/set-datomic-mode! :peer)
+  (let [_ (datomic/transact! (conn db-name)
+                             [{:db/id                "tempid"
+                               :event/slug           "test-event"
+                               :event/notes-markdown "# notes"}])]
+    (is (= [:db/retract [:event/slug "test-event"] :event/notes-markdown "# notes"]
+           (data.edit/update-field-value-tx
+            (db db-name)
+            #:field{:entity-id [:event/slug "test-event"]
+                    :attr      :event/notes-markdown
+                    :value     ""})))))
 
-  (orchestra.spec.test/instrument)
+(deftest update-field-value!
+  (let [_ (datomic/transact! (conn db-name)
+                             [{:db/id      "tempid"
+                               :event/slug "test-event"}])
+        _ (data.edit/update-field-value!
+           (conn db-name)
+           (db db-name)
+           #{:event/notes-markdown}
+           #:field{:entity-id [:event/slug "test-event"]
+                   :attr      :event/notes-markdown
+                   :value     "# notes"})]
+    (is (= (datomic/attr (db db-name) [:event/slug "test-event"] :event/notes-markdown)
+           "# notes")))
 
-  (data.edit/check-field-update (repl/db)
-                                #{:event/organisers}
-                                #:field{:entity-id 1
-                                        :attr      :event/organisers
-                                        :value     TEST-PERSON-ID})
-
-  )
+  (let [_ (datomic/transact! (conn db-name)
+                             [{:db/id      "tempid"
+                               :event/slug "test-event2"}])
+        _ (data.edit/update-field-value!
+           (conn db-name)
+           (db db-name)
+           #{:event/notes-markdown}
+           #:field{:entity-id [:event/slug "test-event"]
+                   :attr      :event/notes-markdown
+                   :value     ""})]
+    (is (nil? (datomic/attr (db db-name) [:event/slug "test-event"] :event/notes-markdown)))))

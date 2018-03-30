@@ -37,8 +37,8 @@
   (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
 
   (let [result (api.base/api (merge (TEST-PAYLOAD)
-                                    {:action     ::event.api/edit-event
-                                     :event-slug "april-event"}))]
+                                    {:action   ::event.api/edit-event
+                                     :event-id [:event/slug "april-event"]}))]
 
     (is (= (get-in result [:event/chapter :chapter/slug])
            "clojurebridge-hermanus"))
@@ -56,3 +56,17 @@
            "clojurebridge-hermanus"))
     (is (= (->  result :event/organisers first :person/name)
            "Test Name"))))
+
+(deftest update-field-value!
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (let [result (api.base/api (merge (TEST-PAYLOAD)
+                                    {:action   ::event.api/update-field-value!
+                                     :event-id [:event/slug "april-event"]
+                                     :field-update
+                                     #:field{:attr  :event/notes-markdown
+                                             :value "# notes"}}))]
+
+    (is (= (:event/notes-markdown result)
+           "# notes"))))

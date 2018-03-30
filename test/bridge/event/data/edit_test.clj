@@ -38,3 +38,17 @@
            "Test Name"))
     ))
 
+(deftest event-for-editing
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (let [new-db (db db-name)
+        for-editing (->> TEST-EVENT-SLUG
+                         (event.data/event-id-by-slug new-db)
+                         (event.data.edit/event-for-editing new-db))]
+    (is (= (get-in for-editing [:event/chapter :chapter/slug])
+           "clojurebridge-hermanus"))
+    (is (= (->  for-editing :event/organisers first :person/name)
+           "Test Name"))
+    ))
+

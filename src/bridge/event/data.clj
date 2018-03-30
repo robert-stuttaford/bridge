@@ -51,23 +51,6 @@
 (defn save-new-event! [conn event-tx]
   (datomic/transact! conn [event-tx]))
 
-(comment
-
-  (orchestra.spec.test/instrument)
-
-  (require '[bridge.dev.repl :as repl])
-
-  (->> (new-event-tx [:chapter/slug "clojurebridge-hermanus"]
-                     [:person/email "test@cb.org"]
-                     #:event{:title      "April Event"
-                             :start-date #inst "2018-04-06"
-                             :end-date   #inst "2018-04-07"})
-       (save-new-event! (repl/conn)))
-
-  (->> (event-id-by-slug (repl/db) "april-event")
-       (event-for-editing (repl/db)))
-  )
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Schema
 
