@@ -38,3 +38,4 @@
            "Test Name"))
     ))
 
+;; TODO test custom validations - status, organisers
