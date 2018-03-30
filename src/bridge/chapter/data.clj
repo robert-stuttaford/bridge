@@ -21,7 +21,7 @@
 
 (defn check-chapter-organiser [db chapter-id active-user-id]
   (when-not (person-is-organiser? db chapter-id active-user-id)
-    {:error :bridge/not-chapter-organiser}))
+    {:error :bridge.error/not-chapter-organiser}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Transactions

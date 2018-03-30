@@ -41,7 +41,7 @@
 
 (defn check-event-organiser [db event-id active-user-id]
   (when-not (person-is-organiser? db event-id active-user-id)
-    {:error :bridge/not-event-organiser}))
+    {:error :bridge.error/not-event-organiser}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Transactions

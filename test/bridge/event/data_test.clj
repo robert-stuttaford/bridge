@@ -93,7 +93,7 @@
                (event.data/event-id-by-slug new-db TEST-EVENT-SLUG)
                TEST-PERSON-ID)))
 
-    (is (= {:error :bridge/not-event-organiser}
+    (is (= {:error :bridge.error/not-event-organiser}
            (event.data/check-event-organiser
             new-db
             (event.data/event-id-by-slug new-db TEST-EVENT-SLUG)

@@ -77,7 +77,7 @@
                (chapter.data/chapter-id-by-slug new-db TEST-CHAPTER-SLUG)
                TEST-PERSON-ID)))
 
-    (is (= {:error :bridge/not-chapter-organiser}
+    (is (= {:error :bridge.error/not-chapter-organiser}
            (chapter.data/check-chapter-organiser
             new-db
             (chapter.data/chapter-id-by-slug new-db TEST-CHAPTER-SLUG)
