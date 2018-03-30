@@ -1,9 +1,10 @@
 (ns bridge.spec
-  #?@(:clj  [(:require [clojure.spec.alpha :as s]
-                       [clojure.string :as str])
-             (:import datomic.Database)]
-      :cljs [(:require [clojure.spec.alpha :as s]
-                       [clojure.string :as str])]))
+  #?@
+   (:clj
+    [(:require [clojure.spec.alpha :as s] [clojure.string :as str])
+     (:import datomic.Database)]
+    :cljs
+    [(:require [clojure.spec.alpha :as s] [clojure.string :as str])]))
 
 (def not-blank? (complement str/blank?))
 
@@ -40,10 +41,10 @@
 
 ;; Only used server-side
 
-(s/def :bridge.datomic/db
-  #?(:cljs some?
-     :clj (s/or :peer #(instance? datomic.Database %)
-                :client #(satisfies? datomic.client.impl.shared.protocols.Db %))))
+#?(:clj
+   (s/def :bridge.datomic/db
+     (s/or :peer #(instance? datomic.Database %)
+           :client #(satisfies? datomic.client.impl.shared.protocols.Db %))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Datomic transactions and pull results

@@ -1,4 +1,4 @@
-(ns bridge.event.data.edit
+ (ns bridge.event.data.edit
   (:require [bridge.data.datomic :as datomic]
             [bridge.data.edit :as data.edit]
             [clj-time.core :as t]))
@@ -52,41 +52,9 @@
           {:error :bridge.event.error/status-may-not-change}
 
           (not (contains? possible-next-status value))
-          {:error             :bridge.event.error/invalid-next-status
-           :valid-next-status possible-next-status
-           :event/status      value})))
-
-;;; :event/start-date, :event/end-date, :event/registration-close-date
-
-(defn check-start-end-date [start-date end-date]
-  (when (t/after? end-date start-date)
-    {:error            :bridge.event.error/start-can-not-be-after-end
-     :event/start-date start-date
-     :event/end-date   end-date}))
-
-(defn check-registration-close-start-date [registration-close-date start-date]
-  (when (t/after? start-date registration-close-date)
-    {:error :bridge.event.error/registration-close-can-not-be-after-start
-     :event/registration-close-date registration-close-date
-     :event/end-date                start-date}))
-
-(defmethod data.edit/check-custom-validation :event/start-date
-  [db {:field/keys [entity-id value]}]
-  (or (check-start-end-date value
-                            (datomic/attr db entity-id :event/end-date))
-      (check-registration-close-start-date
-       (datomic/attr db entity-id :event/registration-close-date)
-       value)))
-
-(defmethod data.edit/check-custom-validation :event/end-date
-  [db {:field/keys [entity-id value]}]
-  (check-start-end-date (datomic/attr db entity-id :event/start-date)
-                        value))
-
-(defmethod data.edit/check-custom-validation :event/registration-close-date
-  [db {:field/keys [entity-id value]}]
-  (check-registration-close-start-date value
-                                       (datomic/attr db entity-id :event/start-date)))
+          {:error                :bridge.event.error/invalid-next-status
+           :possible-next-status possible-next-status
+           :event/status         value})))
 
 ;;; :event/organisers
 

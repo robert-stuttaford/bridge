@@ -1,5 +1,6 @@
 (ns bridge.event.spec
-  (:require bridge.spec
+  (:require [bridge.data.date :as data.date]
+            bridge.spec
             [clojure.spec.alpha :as s]))
 
 (s/def :event/status #{:status/draft :status/published :status/in-progress
@@ -14,9 +15,19 @@
 (s/def :event/details-markdown :bridge.spec/optional-string)
 (s/def :event/notes-markdown :bridge.spec/optional-string)
 
+(defn event-dates-in-order? [{:event/keys [start-date
+                                           end-date
+                                           registration-close-date]}]
+  (and (not (data.date/date-after? start-date
+                                   end-date))
+       (or (nil? registration-close-date)
+           (not (data.date/date-after? registration-close-date
+                                       start-date)))))
+
 (s/def :bridge/new-event
-  (s/keys :req [:event/title :event/start-date :event/end-date]
-          :opt [:event/registration-close-date]))
+  (s/and (s/keys :req [:event/title :event/start-date :event/end-date]
+                 :opt [:event/registration-close-date])
+         event-dates-in-order?))
 
 (s/def :bridge/event
   (s/merge :bridge/new-event
