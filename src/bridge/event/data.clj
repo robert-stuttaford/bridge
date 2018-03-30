@@ -1,8 +1,9 @@
 (ns bridge.event.data
   (:require [bridge.data.datomic :as datomic]
             [bridge.data.slug :as slug]
-            bridge.spec
             [clojure.spec.alpha :as s]))
+
+(require 'bridge.event.spec)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Queries
@@ -55,6 +56,12 @@
               :event/organisers [{:db/id organiser-id}]})
       (cond-> (nil? registration-close-date)
         (assoc :event/registration-close-date start-date))))
+
+(s/fdef new-event-tx
+        :args (s/cat :chapter-id :bridge.datomic/id
+                     :organiser-id :bridge.datomic/id
+                     :new-event :bridge/new-event)
+        :ret :bridge/new-event-tx)
 
 (defn save-new-event! [conn event-tx]
   (datomic/transact! conn [event-tx]))
@@ -122,36 +129,3 @@
    {:db/ident       :event/notes-markdown
     :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/string}])
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Specs
-
-(s/def :event/status #{:status/draft :status/published :status/in-progress
-                       :status/cancelled :status/complete})
-(s/def :event/title :bridge.spec/required-string)
-(s/def :event/slug :bridge.spec/slug)
-(s/def :event/chapter :bridge.datomic/ref)
-(s/def :event/organisers (s/coll-of :bridge.datomic/ref :min-count 1))
-(s/def :event/start-date inst?)
-(s/def :event/end-date inst?)
-(s/def :event/registration-close-date inst?)
-(s/def :event/details-markdown :bridge.spec/optional-string)
-(s/def :event/notes-markdown :bridge.spec/optional-string)
-
-(s/def :bridge/new-event
-  (s/keys :req [:event/title :event/start-date :event/end-date]
-          :opt [:event/registration-close-date]))
-
-(s/def :bridge/event
-  (s/merge :bridge/new-event
-           (s/keys :req [:event/status :event/slug :event/registration-close-date
-                         :event/chapter :event/organisers]
-                   :opt [:event/details-markdown :event/notes-markdown])))
-
-(s/def :bridge/new-event-tx :bridge/event)
-
-(s/fdef new-event-tx
-        :args (s/cat :chapter-id :bridge.datomic/id
-                     :organiser-id :bridge.datomic/id
-                     :new-event :bridge/new-event)
-        :ret :bridge/new-event-tx)

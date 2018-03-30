@@ -1,8 +1,9 @@
 (ns bridge.chapter.data
   (:require [bridge.data.datomic :as datomic]
             [bridge.data.slug :as slug]
-            bridge.spec
             [clojure.spec.alpha :as s]))
+
+(require 'bridge.chapter.spec)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Queries
@@ -32,6 +33,11 @@
       (merge {:chapter/slug       (slug/->slug title)
               :chapter/status     :status/active
               :chapter/organisers [{:db/id organiser-id}]})))
+
+(s/fdef new-chapter-tx
+        :args (s/cat :active-user-id :bridge.datomic/id
+                     :new-chapter :bridge/new-chapter)
+        :ret :bridge/new-chapter-tx)
 
 (defn save-new-chapter! [conn chapter-tx]
   (datomic/transact! conn [chapter-tx]))
@@ -70,27 +76,3 @@
    {:db/ident       :chapter/location
     :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/string}])
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Specs
-
-(s/def :chapter/status #{:status/active})
-(s/def :chapter/title :bridge.spec/required-string)
-(s/def :chapter/slug :bridge.spec/slug)
-(s/def :chapter/location :bridge.spec/required-string)
-(s/def :chapter/organisers (s/coll-of :bridge.datomic/ref :min-count 1))
-
-(s/def :bridge/new-chapter
-  (s/keys :req [:chapter/title :chapter/location]))
-
-(s/def :bridge/chapter
-  (s/merge :bridge/new-chapter
-           (s/keys :req [:chapter/status :chapter/slug :chapter/organisers]
-                   :opt [:chapter/events])))
-
-(s/def :bridge/new-chapter-tx :bridge/chapter)
-
-(s/fdef new-chapter-tx
-        :args (s/cat :active-user-id :bridge.datomic/id
-                     :new-chapter :bridge/new-chapter)
-        :ret :bridge/new-chapter-tx)

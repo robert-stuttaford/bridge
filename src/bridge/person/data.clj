@@ -1,12 +1,13 @@
 (ns bridge.person.data
   (:require [bridge.data.datomic :as datomic]
-            bridge.spec
             [buddy.core.codecs :as buddy.codecs]
             [buddy.core.nonce :as buddy.nonce]
             [buddy.hashers :as hashers]
             [clojure.spec.alpha :as s]
             [clojure.string :as str]
             [clojure.tools.logging :as logging]))
+
+(require 'bridge.person.spec)
 
 (defn clean-email [email]
   (some-> email str/trim str/lower-case))
@@ -54,6 +55,12 @@
       (update :person/password hash-password)
       (merge #:person{:status :status/active
                       :confirm-email-token (nonce)})))
+
+(s/fdef new-person-tx
+        :args (s/cat :new-person :bridge/new-person)
+        :ret :bridge/new-person-tx
+        :fn #(not= (get-in % [:args :new-person :person/password])
+                   (get-in % [:ret :person/password])))
 
 (defn save-new-person! [conn person-tx]
   (datomic/transact! conn [person-tx])
@@ -107,28 +114,3 @@
     :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/string
     :db/unique      :db.unique/value}])
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Specs
-
-(s/def :person/name :bridge.spec/required-string)
-(s/def :person/email :bridge.spec/email)
-(s/def :person/password :bridge.spec/required-string)
-(s/def :person/status #{:status/active :status/suspended :status/deleted})
-(s/def :person/confirm-email-token :bridge.spec/nonce)
-(s/def :person/reset-password-token :bridge.spec/nonce)
-
-(s/def :bridge/new-person
-  (s/keys :req [:person/name :person/email :person/password]))
-
-(s/def :bridge/person
-  (s/merge :bridge/new-person (s/keys :req [:person/status])))
-
-(s/def :bridge/new-person-tx
-  (s/merge :bridge/person (s/keys :req [:person/confirm-email-token])))
-
-(s/fdef new-person-tx
-        :args (s/cat :new-person :bridge/new-person)
-        :ret :bridge/new-person-tx
-        :fn #(not= (get-in % [:args :new-person :person/password])
-                   (get-in % [:ret :person/password])))

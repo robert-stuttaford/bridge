@@ -42,10 +42,6 @@ http https://github.com/Day8/re-frame-http-fx
 debug https://github.com/Day8/re-frame-10x
 testing https://github.com/Day8/re-frame-test
 
-# find old deps
-
-https://github.com/Olical/depot
-
 # graphviz
 
 http://stevebuik.github.io/GraphVizForce/
