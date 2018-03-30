@@ -1,5 +1,6 @@
 (ns bridge.event.api
   (:require [bridge.event.data :as event.data]
+            [bridge.event.data.edit :as event.data.edit]
             [bridge.web.api.base :as api.base]
             [bridge.chapter.data :as chapter.data]))
 
@@ -8,7 +9,7 @@
   (let [event-id (event.data/event-id-by-slug db event-slug)]
     (or (event.data/check-event-organiser db event-id active-user-id)
         (->> (event.data/event-id-by-slug db event-slug)
-             (event.data/event-for-editing db)))))
+             (event.data.edit/event-for-editing db)))))
 
 (defmethod api.base/api ::save-new-event! [{:datomic/keys [db conn]
                                             :keys [active-user-id chapter-id new-event]

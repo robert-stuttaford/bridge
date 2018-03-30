@@ -21,21 +21,6 @@
                            [?event :event/organiser ?organiser]]
                          db organiser-id)))
 
-(def event-for-editing-pull-spec
-  [:event/title
-   :event/slug
-   :event/status
-   {:event/chapter [:chapter/slug]}
-   {:event/organisers [:person/name]}
-   :event/start-date
-   :event/end-date
-   :event/registration-close-date
-   :event/details-markdown
-   :event/notes-markdown])
-
-(defn event-for-editing [db event-id]
-  (datomic/pull db event-for-editing-pull-spec event-id))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Authorisations
 

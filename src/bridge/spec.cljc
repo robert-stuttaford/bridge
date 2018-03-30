@@ -76,11 +76,35 @@
 (s/def :bridge.datomic.lookup-ref/attr keyword?)
 (s/def :bridge.datomic.lookup-ref/val :bridge.datomic/scalar-value)
 
+(s/def :bridge.datomic/stored-id
+  (s/or :lookup-ref :bridge.datomic/lookup-ref
+        :id pos-int?))
+
 (s/def :bridge.datomic/id
   (s/or :tempid :bridge.datomic/tempid
-        :lookup-ref :bridge.datomic/lookup-ref
-        :id pos-int?))
+        :stored-id :bridge.datomic/stored-id))
 
 (s/def :bridge.datomic/ref
   (s/or :id :bridge.datomic/id
         :map (s/map-of keyword? :bridge.datomic/value)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Field edit operations
+
+(s/def :field/entity-id :bridge.datomic/stored-id)
+(s/def :field/attr keyword?)
+(s/def :field/value
+  (s/or :scalar :bridge.datomic/scalar-value
+        :lookup-ref :bridge.datomic/lookup-ref
+        :lookup-ref-coll (s/coll-of :bridge.datomic/lookup-ref)))
+
+(s/def :field/retract? boolean?)
+
+(s/def :bridge/edit-field-operation
+  (s/keys :req [:field/entity-id :field/attr :field/value]
+          :opt [:field/retract?]))
+
+(s/def :bridge/error keyword?)
+
+(s/def :bridge/error-result
+  (s/keys :req-un [:bridge/error]))
