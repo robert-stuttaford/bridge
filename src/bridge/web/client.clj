@@ -27,7 +27,7 @@
 
 (def routes
   {:routes
-   '{"/"                   ^:authorized? [:client]
+   '{"/"                   ^:authenticated? [:client]
      "/bridge.css"         [:css]
      ^{:re #"/js/.*"} path [:js-resource path]}
    :handlers

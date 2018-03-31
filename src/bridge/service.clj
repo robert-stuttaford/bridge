@@ -32,11 +32,11 @@
 
 (def common-routing
   {:middleware
-   {:authorized? (fn [handler]
-                   (fn [request]
-                     (if-not (buddy/authenticated? request)
-                       (buddy/throw-unauthorized)
-                       (handler request))))}})
+   {:authenticated? (fn [handler]
+                      (fn [request]
+                        (if-not (buddy/authenticated? request)
+                          (buddy/throw-unauthorized)
+                          (handler request))))}})
 
 (defmethod ig/init-key :service/handler [_ {:keys [cookie datomic]}]
   (-> (merge-with merge

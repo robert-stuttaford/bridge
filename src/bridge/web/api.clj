@@ -16,6 +16,6 @@
 
 (def routes
   {:routes
-   '{[:post "/client/api"] ^:authorized? [:client-api]}
+   '{[:post "/client/api"] ^:authenticated? [:client-api]}
    :handlers
    {:client-api  #'handle-api}})
