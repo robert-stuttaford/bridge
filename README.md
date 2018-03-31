@@ -2,6 +2,12 @@
 
 An event registration system for ClojureBridge. [Read the blog post](https://www.stuttaford.me/2018/02/18/a-clojure-learning-journey/).
 
+Dev diary:
+
+- [Bridge dev diary: Datomic mode](https://www.stuttaford.me//2018/03/03/bridge-dev-diary--datomic-mode/) — 3 March, 2018
+- [Bridge dev diary: Modelling access](https://www.stuttaford.me//2018/03/17/bridge-dev-diary--modelling-access/) — 17 March, 2018
+- [Bridge dev diary: Events API](https://www.stuttaford.me/2018/03/31/bridge-dev-diary--events-api/) — 31 March, 2018
+
 ## Development
 
 Install the [Clojure CLI](https://clojure.org/guides/getting_started), clone this repo.
