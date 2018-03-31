@@ -19,8 +19,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Authorisations
 
-(defn check-chapter-organiser [db chapter-id active-user-id]
-  (when-not (person-is-organiser? db chapter-id active-user-id)
+(defn check-chapter-organiser [db chapter-id active-person-id]
+  (when-not (person-is-organiser? db chapter-id active-person-id)
     {:error :bridge.error/not-chapter-organiser}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -35,7 +35,7 @@
               :chapter/organisers [{:db/id organiser-id}]})))
 
 (s/fdef new-chapter-tx
-        :args (s/cat :active-user-id :bridge.datomic/id
+        :args (s/cat :active-person-id :bridge.datomic/id
                      :new-chapter :bridge/new-chapter)
         :ret :bridge/new-chapter-tx)
 

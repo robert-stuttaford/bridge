@@ -24,8 +24,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Authorisations
 
-(defn check-event-organiser [db event-id active-user-id]
-  (when-not (person-is-organiser? db event-id active-user-id)
+(defn check-event-organiser [db event-id active-person-id]
+  (when-not (person-is-organiser? db event-id active-person-id)
     {:error :bridge.error/not-event-organiser}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
