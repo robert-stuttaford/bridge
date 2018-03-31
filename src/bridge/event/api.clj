@@ -16,7 +16,7 @@
             {db :db-after} (event.data/save-new-event! conn event-tx)]
         (event.data.edit/event-for-editing db [:event/slug slug]))))
 
-(defmethod api.base/api ::edit-event
+(defmethod api.base/api ::event-details
   [{:datomic/keys [db]
     :keys [active-user-id event-id]}]
   (or (event.data/check-event-organiser db event-id active-user-id)

@@ -33,12 +33,12 @@
    :datomic/conn   (conn db-name)
    :active-user-id TEST-PERSON-ID})
 
-(deftest edit-event
+(deftest event-details
 
   (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
 
   (let [result (api.base/api (merge (TEST-PAYLOAD)
-                                    {:action   ::event.api/edit-event
+                                    {:action   ::event.api/event-details
                                      :event-id [:event/slug "april-event"]}))]
 
     (is (= (get-in result [:event/chapter :chapter/slug])
