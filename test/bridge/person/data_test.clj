@@ -7,17 +7,10 @@
             [clojure.test :refer [deftest is use-fixtures]])
   (:import clojure.lang.ExceptionInfo))
 
-
-;; TODO `person.data/send-email!`
-
-
 (def db-name (str *ns*))
 
 (use-fixtures :once test-setup)
 (use-fixtures :each (with-database db-name person.schema/schema))
-
-(defn db-after-tx [tx]
-  (:db-after (datomic/with (conn db-name) tx)))
 
 (def TEST-EMAIL "test@cb.org")
 (def TEST-PASSWORD "secret")
