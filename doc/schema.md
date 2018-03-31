@@ -51,7 +51,7 @@
 
 ### event
 
-- state: draft, registering, in progress, cancelled, complete
+- state: draft, registering, inviting, in progress, cancelled, complete
 - slug
 - registration close date
 - begin date

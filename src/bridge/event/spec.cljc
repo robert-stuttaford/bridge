@@ -3,8 +3,8 @@
             bridge.spec
             [clojure.spec.alpha :as s]))
 
-(s/def :event/status #{:status/draft :status/registering :status/in-progress
-                       :status/cancelled :status/complete})
+(s/def :event/status #{:status/draft :status/registering :status/inviting
+                       :status/in-progress :status/cancelled :status/complete})
 (s/def :event/title :bridge.spec/required-string)
 (s/def :event/slug :bridge.spec/slug)
 (s/def :event/chapter :bridge.datomic/ref)

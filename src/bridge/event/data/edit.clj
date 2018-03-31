@@ -38,7 +38,8 @@
 
 (def status->valid-next-status
   {:status/draft       #{:status/registering :status/cancelled}
-   :status/registering #{:status/in-progress :status/cancelled}
+   :status/registering #{:status/inviting    :status/cancelled}
+   :status/inviting    #{:status/in-progress :status/cancelled}
    :status/in-progress #{:status/complete    :status/cancelled}})
 
 (defmethod data.edit/check-custom-validation :event/status
