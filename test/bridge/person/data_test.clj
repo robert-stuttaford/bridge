@@ -1,6 +1,7 @@
 (ns bridge.person.data-test
   (:require [bridge.data.datomic :as datomic]
             [bridge.person.data :as person.data]
+            [bridge.person.schema :as person.schema]
             [bridge.test.util :refer [conn db test-setup with-database]]
             [clojure.spec.alpha :as s]
             [clojure.test :refer [deftest is use-fixtures]])
@@ -13,7 +14,7 @@
 (def db-name (str *ns*))
 
 (use-fixtures :once test-setup)
-(use-fixtures :each (with-database db-name person.data/schema))
+(use-fixtures :each (with-database db-name person.schema/schema))
 
 (defn db-after-tx [tx]
   (:db-after (datomic/with (conn db-name) tx)))

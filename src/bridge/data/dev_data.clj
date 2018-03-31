@@ -1,8 +1,10 @@
 (ns bridge.data.dev-data
   (:require [bridge.chapter.data :as chapter.data]
+            [bridge.chapter.schema :as chapter.schema]
             [bridge.data.datomic :as datomic]
             [bridge.data.slug :as slug]
             [bridge.person.data :as person.data]
+            [bridge.person.schema :as person.schema]
             [integrant.core :as ig]))
 
 (defn add-chapter! [conn organiser-id {:chapter/keys [title] :as new-chapter}]
@@ -21,13 +23,13 @@
 (defmethod ig/init-key :datomic/dev-data [_ {{:datomic/keys [mode conn]} :datomic}]
   (datomic/with-datomic-mode mode
     ;; people
-    (datomic/transact! conn person.data/schema)
+    (datomic/transact! conn person.schema/schema)
     (add-person! conn #:person{:name     "Test Name"
                                :email    "test@cb.org"
                                :password "secret"})
 
     ;; chapters
-    (datomic/transact! conn chapter.data/schema)
+    (datomic/transact! conn chapter.schema/schema)
     (add-chapter! conn [:person/email "test@cb.org"]
                   #:chapter{:title    "ClojureBridge Hermanus"
                             :location "Hermanus"})

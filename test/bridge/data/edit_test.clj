@@ -3,6 +3,7 @@
             [bridge.data.edit :as data.edit]
             [bridge.data.slug :as slug]
             [bridge.event.data :as event.data]
+            [bridge.event.schema :as event.schema]
             [bridge.test.fixtures
              :as
              fixtures
@@ -16,7 +17,7 @@
 (def db-name (str *ns*))
 
 (use-fixtures :once test-setup)
-(use-fixtures :each (join-fixtures [(with-database db-name event.data/schema)
+(use-fixtures :each (join-fixtures [(with-database db-name event.schema/schema)
                                     (fixtures/person-fixtures db-name)
                                     (fixtures/chapter-fixtures db-name)]))
 

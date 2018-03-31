@@ -1,5 +1,6 @@
 (ns bridge.chapter.data-test
   (:require [bridge.chapter.data :as chapter.data]
+            [bridge.chapter.schema :as chapter.schema]
             [bridge.data.slug :as slug]
             [bridge.test.fixtures :as fixtures :refer [TEST-PERSON-ID]]
             [bridge.test.util :refer [conn db test-setup with-database]]
@@ -10,7 +11,7 @@
 (def db-name (str *ns*))
 
 (use-fixtures :once test-setup)
-(use-fixtures :each (join-fixtures [(with-database db-name chapter.data/schema)
+(use-fixtures :each (join-fixtures [(with-database db-name chapter.schema/schema)
                                     (fixtures/person-fixtures db-name)]))
 
 (def TEST-CHAPTER-TITLE "ClojureBridge Hermanus")

@@ -2,6 +2,7 @@
   (:require [bridge.data.slug :as slug]
             [bridge.event.api :as event.api]
             [bridge.event.data :as event.data]
+            [bridge.event.schema :as event.schema]
             [bridge.test.fixtures :as fixtures :refer [TEST-CHAPTER-ID TEST-PERSON-ID]]
             [bridge.test.util :refer [conn db test-setup with-database]]
             [bridge.web.api.base :as api.base]
@@ -10,7 +11,7 @@
 (def db-name (str *ns*))
 
 (use-fixtures :once test-setup)
-(use-fixtures :each (join-fixtures [(with-database db-name event.data/schema)
+(use-fixtures :each (join-fixtures [(with-database db-name event.schema/schema)
                                     (fixtures/person-fixtures db-name)
                                     (fixtures/chapter-fixtures db-name)]))
 
