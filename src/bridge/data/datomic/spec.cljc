@@ -30,7 +30,7 @@
 (s/def :bridge.datomic.tempid/idx neg-int?)
 
 (s/def :bridge.datomic/tempid
-  (s/or :string ::required-string
+  (s/or :string :bridge.spec/required-string
         :partition :bridge.datomic/partitioned-tempid))
 
 (s/def :bridge.datomic/lookup-ref

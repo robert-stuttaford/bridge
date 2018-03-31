@@ -38,8 +38,8 @@
 (s/def :bridge/error
   (s/and keyword?
          #(let [ns (namespace %)]
-            (and (re-find ns "^bridge")
-                 (re-find ns "error$")))))
+            (and (re-find #"^bridge" ns)
+                 (re-find #"error$" ns)))))
 
 (s/def :bridge/error-result
   (s/keys :req-un [:bridge/error]))
