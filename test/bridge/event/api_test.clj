@@ -29,9 +29,9 @@
   (event.data/new-event-tx TEST-CHAPTER-ID TEST-PERSON-ID TEST-NEW-EVENT))
 
 (defn TEST-PAYLOAD []
-  {:datomic/db     (db db-name)
-   :datomic/conn   (conn db-name)
-   :active-user-id TEST-PERSON-ID})
+  {:datomic/db       (db db-name)
+   :datomic/conn     (conn db-name)
+   :active-person-id TEST-PERSON-ID})
 
 (deftest event-details
 

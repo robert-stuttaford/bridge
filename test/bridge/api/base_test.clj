@@ -15,23 +15,23 @@
   (is (= :implemented (api.base/api {:action ::implemented}))))
 
 (deftest request->api-payload
-  (is (= {:action         :action
-          :datomic/db     1
-          :datomic/conn   1
-          :active-user-id 1}
+  (is (= {:action           :action
+          :datomic/db       1
+          :datomic/conn     1
+          :active-person-id 1}
          (api.base/request->api-payload {:session      {:identity 1}
                                          :datomic/db   1
                                          :datomic/conn 1
                                          :body         "{:action :action}"}))))
 
 (deftest new-payload
-  (is (= {:action         :new-action
-          :datomic/db     2
-          :datomic/conn   1
-          :active-user-id 1}
-         (api.base/new-payload {:action         :action
-                                :datomic/db     1
-                                :datomic/conn   1
-                                :active-user-id 1}
+  (is (= {:action           :new-action
+          :datomic/db       2
+          :datomic/conn     1
+          :active-person-id 1}
+         (api.base/new-payload {:action           :action
+                                :datomic/db       1
+                                :datomic/conn     1
+                                :active-person-id 1}
                                {:action     :new-action
                                 :datomic/db 2}))))
