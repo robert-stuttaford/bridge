@@ -1,15 +1,17 @@
 (ns bridge.data.datomic.spec
   #?@
    (:clj
-    [(:require [clojure.spec.alpha :as s])
-     (:import datomic.client.impl.shared.protocols.Db datomic.Database)]
+    [(:require
+      [clojure.spec.alpha :as s]
+      [datomic.client.impl.shared.protocols :as datomic.client.protocols])
+     (:import datomic.Database)]
     :cljs
     [(:require [clojure.spec.alpha :as s])]))
 
 #?(:clj
    (s/def :bridge.datomic/db
      (s/or :peer #(instance? datomic.Database %)
-           :client #(satisfies? datomic.client.impl.shared.protocols.Db %))))
+           :client #(satisfies? datomic.client.protocols/Db %))))
 
 (s/def :bridge.datomic/scalar-value
   (s/or :long integer?

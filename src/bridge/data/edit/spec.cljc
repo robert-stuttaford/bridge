@@ -1,6 +1,8 @@
 (ns bridge.data.edit.spec
   (:require [clojure.spec.alpha :as s]))
 
+(require 'bridge.data.datomic.spec)
+
 (s/def :field/entity-id :bridge.datomic/stored-id)
 (s/def :field/attr keyword?)
 (s/def :field/value
