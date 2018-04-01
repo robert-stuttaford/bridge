@@ -2,11 +2,11 @@
 
 ### user
 
-- state: active, suspended
-- preferred name
-- full name
-- email addresses
-- password
+- ~~state: active, suspended~~
+- ~~preferred name~~
+- ~~full name~~
+- ~~email address~~
+- ~~password~~
 - admin? (manage chapters)
 - minor or adult?
 - spoken languages
@@ -29,13 +29,13 @@
 
 ### chapter
 
-- state: active, suspended
-- name
-- location
+- ~~state: active, suspended~~
+- ~~name~~
+- ~~location~~
 - email templates
-- events
+- ~~events~~
 - organiser invites
-- organisers (manage own chapter, its organisers, and its events)
+- ~~organisers~~ (manage own chapter, its organisers, and its events)
 
 ### email template
 
@@ -51,14 +51,14 @@
 
 ### event
 
-- state: draft, registering, inviting, in progress, cancelled, complete
-- slug
-- registration close date
-- begin date
-- end date
-- event details - markdown
-- internal notes - markdown
-- organisers
+- ~~state: draft, registering, inviting, in progress, cancelled, complete~~
+- ~~slug~~
+- ~~registration close date~~
+- ~~begin date~~
+- ~~end date~~
+- ~~event details - markdown~~
+- ~~internal notes - markdown~~
+- ~~organisers~~
 - participants
 - coaches
 - groupings
