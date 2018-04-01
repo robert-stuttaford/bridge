@@ -1,6 +1,7 @@
 (ns bridge.event.spec
   (:require [bridge.data.date :as data.date]
             bridge.spec
+            bridge.data.datomic.spec
             [clojure.spec.alpha :as s]))
 
 (s/def :event/status #{:status/draft :status/registering :status/inviting

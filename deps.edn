@@ -28,6 +28,7 @@
   ataraxy                        {:mvn/version "0.4.0"}
   hiccup                         {:mvn/version "1.0.5"}
   ring/ring-devel                {:mvn/version "1.6.3"}
+  ring-cljsjs                    {:mvn/version "0.1.0"}
 
   ;; Cljs
   org.clojure/clojurescript {:mvn/version "1.10.238"}
@@ -48,6 +49,8 @@
   day8.re-frame/tracing      {:mvn/version "0.5.0"}
   day8.re-frame/test         {:mvn/version "0.1.5"}
   binaryage/devtools         {:mvn/version "0.9.9"}
+  cljsjs/react-dates         {:mvn/version "12.2.4-1"}
+  cljsjs/prop-types          {:mvn/version "15.6.0-0"}
 
   ;; REPL
   org.clojure/tools.nrepl {:mvn/version "0.2.13"}

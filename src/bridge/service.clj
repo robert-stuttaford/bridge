@@ -12,6 +12,7 @@
             [buddy.auth.middleware :as buddy.middleware]
             [clojure.tools.logging :as logging]
             [integrant.core :as ig]
+            [ring.middleware.cljsjs :as ring.cljsjs]
             [ring.middleware.keyword-params :as ring.keyword-params]
             [ring.middleware.params :as ring.params]
             [ring.middleware.session :as ring.session]
@@ -52,6 +53,7 @@
       (buddy.middleware/wrap-authentication auth-backend)
       ring.keyword-params/wrap-keyword-params
       ring.params/wrap-params
+      ring.cljsjs/wrap-cljsjs
       (ring.session/wrap-session (update cookie :store ring.cookie/cookie-store))
       (ring.stacktrace/wrap-stacktrace-web)))
 

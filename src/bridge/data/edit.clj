@@ -1,6 +1,6 @@
 (ns bridge.data.edit
   (:require [bridge.data.datomic :as datomic]
-            [bridge.data.string :as string]
+            [bridge.data.string :as data.string]
             [clojure.spec.alpha :as s]
             [clojure.string :as str]))
 
@@ -69,7 +69,7 @@
   (if (and (= (datomic/attr-type db attr) :db.type/string)
            (str/blank? value))
     (when-some [existing-value (-> (datomic/attr db entity-id attr)
-                                   string/not-blank)]
+                                   data.string/not-blank)]
       [:db/retract entity-id attr existing-value])
     [(if retract? :db/retract :db/add) entity-id attr value]))
 

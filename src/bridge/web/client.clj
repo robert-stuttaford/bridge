@@ -18,7 +18,9 @@
   (web.template/hiccup-response
    [:div#mount]
    (edn-script-tag "initial-data"
-                   {:active-person (datomic/pull db [:person/name] identity)})
+                   #:bridge.ui{:active-person  (datomic/pull db [:person/name] identity)
+                               ;; TODO parameterise
+                               :active-chapter [:chapter/slug "clojurebridge-hermanus"]})
    [:script {:src "/js/app.js"}]
    [:script "bridge.main.refresh();"]))
 
