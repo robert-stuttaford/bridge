@@ -19,7 +19,8 @@
             [ring.middleware.stacktrace :as ring.stacktrace]
             [ring.util.response :as response]))
 
-(require 'bridge.event.api
+(require 'bridge.data.dev-data
+         'bridge.event.api
          'bridge.web.jetty)
 
 (def auth-backend
