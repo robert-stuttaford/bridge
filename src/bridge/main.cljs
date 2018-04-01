@@ -10,7 +10,8 @@
 (def routes
   ["/app/"
    {"" :home
-    "add-event" :add-event}])
+    "events/"
+    {"create" :create-event}}])
 
 (defn- parse-url [url]
   (bidi/match-route routes url))
@@ -27,7 +28,7 @@
 
 (rf/reg-event-fx
   ::http-post
-  (fn [_ [_ data]]
+  (fn [db [_ data]]
     {:http-xhrio {:method          :post
                   :uri             "/client/api"
                   :params          data
@@ -48,7 +49,12 @@
     (assoc db :bad-api-result result)))
 
 (comment
-  (rf/dispatch [::http-post data])
+  (rf/dispatch [::http-post
+                {:action     :bridge.event.api/save-new-event!
+                 :chapter-id [:chapter/slug "clojurebridge-hermanus"]
+                 :new-event  #:event{:title      "April Event"
+                                     :start-date #inst "2018-04-06"
+                                     :end-date   #inst "2018-04-07"}}])
   )
 
 ;;;
@@ -83,14 +89,25 @@
     [:div.navbar-menu
      [:div.navbar-start
       [:a.navbar-item {:href "/app/"} "Browse Events"]
-      [:a.navbar-item {:href "/app/add-event"} "Add New Event"]]
+      [:a.navbar-item {:href "/app/events/create"} "Create Event"]]
      [:div.navbar-end
       [:div.navbar-item (:person/name @(rf/subscribe [:active-person]))]
       [:a.navbar-item {:href "/logout"} "Sign Out"]]]]])
 
 (defmulti view :view)
 (defmethod view :home [_] [:div "home"])
-(defmethod view :add-event [_] [:div "add-event"])
+(defmethod view :create-event [_]
+  [:div "create-event"
+   [:hr]
+   [:a.button {:href "javascript:"
+               :on-click #(rf/dispatch
+                           [::http-post
+                            {:action     :bridge.event.api/save-new-event!
+                             :chapter-id [:chapter/slug "clojurebridge-hermanus"]
+                             :new-event  #:event{:title      "April Event 2"
+                                                 :start-date #inst "2018-04-06"
+                                                 :end-date   #inst "2018-04-07"}}])}
+    "make event"]])
 
 (defn app []
   [:div

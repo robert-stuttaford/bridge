@@ -15,7 +15,7 @@
 (defn request->api-payload [{:keys [body]
                              {:keys [identity]} :session
                              :as request}]
-  (merge (edn/read-string body)
+  (merge (edn/read-string (slurp body))
          (select-keys request [:datomic/db :datomic/conn])
          {:active-person-id identity}))
 

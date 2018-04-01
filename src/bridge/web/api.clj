@@ -6,8 +6,8 @@
 (defn handle-api [request]
   (let [{:keys [action] :as payload} (api.base/request->api-payload request)]
     (if action
-      {:body (or (api.base/api payload)
-                 {:result :ok})}
+      {:body (pr-str (or (api.base/api payload)
+                         {:result :ok}))}
       {:status 400
        :body   "No :action provided"})))
 

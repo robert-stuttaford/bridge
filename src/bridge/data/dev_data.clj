@@ -3,6 +3,7 @@
             [bridge.chapter.schema :as chapter.schema]
             [bridge.data.datomic :as datomic]
             [bridge.data.slug :as slug]
+            [bridge.event.schema :as event.schema]
             [bridge.person.data :as person.data]
             [bridge.person.schema :as person.schema]
             [integrant.core :as ig]))
@@ -33,5 +34,8 @@
     (add-chapter! conn [:person/email "test@cb.org"]
                   #:chapter{:title    "ClojureBridge Hermanus"
                             :location "Hermanus"})
+
+    ;; events
+    (datomic/transact! conn event.schema/schema)
 
     ))
