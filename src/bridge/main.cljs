@@ -1,35 +1,104 @@
 (ns bridge.main
-  (:require [cljs.reader :as edn]
-            [rum.core :as rum]))
+  (:require [ajax.edn]
+            [bidi.bidi :as bidi]
+            [cljs.reader :as edn]
+            [day8.re-frame.http-fx]
+            [pushy.core :as pushy]
+            [reagent.core :as reagent]
+            [re-frame.core :as rf]))
 
-(enable-console-print!)
+(def routes
+  ["/app/"
+   {"" :home
+    "add-event" :add-event}])
+
+(defn- parse-url [url]
+  (bidi/match-route routes url))
+
+(defn- dispatch-route [{:keys [handler route-params]}]
+  (rf/dispatch [:set-view handler route-params]))
+
+(defn app-routes []
+  (pushy/start! (pushy/pushy dispatch-route parse-url)))
+
+(def url-for (partial bidi/path-for routes))
+
+;;;
+
+(rf/reg-event-fx
+  ::http-post
+  (fn [_ [_ data]]
+    {:http-xhrio {:method          :post
+                  :uri             "/client/api"
+                  :params          data
+                  :timeout         5000
+                  :format          (ajax.edn/edn-request-format)
+                  :response-format (ajax.edn/edn-response-format)
+                  :on-success      [::good-http-result]
+                  :on-failure      [::bad-http-result]}}))
+
+(rf/reg-event-db
+  ::good-http-result
+  (fn [db [_ result]]
+    (assoc db :good-api-result result)))
+
+(rf/reg-event-db
+  ::bad-http-result
+  (fn [db [_ result]]
+    (assoc db :bad-api-result result)))
+
+(comment
+  (rf/dispatch [::http-post data])
+  )
+
+;;;
 
 (defn read-edn-from-script-tag [element]
   (some-> element
           .-textContent
           edn/read-string))
 
-(rum/defc navbar [state]
+(rf/reg-event-db :initialize
+  (fn [_ _]
+    (assoc (some-> (js/document.getElementById "initial-data")
+                   read-edn-from-script-tag)
+           :current-view {:view   :home
+                          :params {}})))
+
+(rf/reg-event-db :set-view
+  (fn [db [_ view params]]
+    (assoc db :current-view {:view   view
+                             :params params})))
+
+(rf/reg-sub :active-person (fn [db _] (:active-person db)))
+(rf/reg-sub :current-view  (fn [db _] (:current-view db)))
+
+(defn navbar []
   [:nav.navbar.is-fixed-top.is-info
-   [:.container
-    [:.navbar-brand
-     [:a.navbar-item {:href "/"}
+   [:div.container
+    [:div.navbar-brand
+     [:a.navbar-item {:href "/app/"}
       [:img {:src (str "http://www.clojurebridge.org/assets/"
                        "cb-logo-cbba8a3667c88b78189d8826867cf01a.png")}]]]
-    [:.navbar-menu
-     [:.navbar-start
-      [:a.navbar-item {:href "javascript:"} "Browse Events"]
-      [:a.navbar-item {:href "javascript:"} "Add New Event"]]
-     [:.navbar-end
-      [:.navbar-item (get-in state [:person :person/name])]
+    [:div.navbar-menu
+     [:div.navbar-start
+      [:a.navbar-item {:href "/app/"} "Browse Events"]
+      [:a.navbar-item {:href "/app/add-event"} "Add New Event"]]
+     [:div.navbar-end
+      [:div.navbar-item (:person/name @(rf/subscribe [:active-person]))]
       [:a.navbar-item {:href "/logout"} "Sign Out"]]]]])
 
-(rum/defc app [initial-data]
+(defmulti view :view)
+(defmethod view :home [_] [:div "home"])
+(defmethod view :add-event [_] [:div "add-event"])
+
+(defn app []
   [:div
-   (navbar initial-data)
-   [:.container {:style {:margin-top "50px"}}]])
+   [navbar]
+   [:div.container {:style {:margin-top "50px"}}
+    (view @(rf/subscribe [:current-view]))]])
 
 (defn ^:export refresh []
-  (rum/mount (app (some-> (js/document.getElementById "initial-data")
-                          read-edn-from-script-tag))
-             (js/document.getElementById "mount")))
+  (rf/dispatch-sync [:initialize])
+  (app-routes)
+  (reagent/render [app] (js/document.getElementById "mount")))

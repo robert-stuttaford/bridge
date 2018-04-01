@@ -18,7 +18,7 @@
   (web.template/hiccup-response
    [:div#mount]
    (edn-script-tag "initial-data"
-                   {:person (datomic/pull db [:person/name] identity)})
+                   {:active-person (datomic/pull db [:person/name] identity)})
    [:script {:src "/js/app.js"}]
    [:script "bridge.main.refresh();"]))
 
@@ -27,14 +27,18 @@
 
 (def routes
   {:routes
-   '{"/"                   ^:authenticated? [:client]
+   '{"/"                   [:redirect-to-client]
+     ^{:re #"^/app.*"} app ^:authenticated? [:client]
      "/bridge.css"         [:css]
      ^{:re #"/js/.*"} path [:js-resource path]}
    :handlers
-   {:client      #'client
-    :js-resource #(-> (:uri %)
-                      (str/replace #"^/" "")
-                      response/resource-response
-                      (response/content-type "application/javascript; charset=utf-8"))
-    :css         (fn [_] (-> (response/resource-response "bridge.css")
-                            (response/content-type "text/css; charset=utf-8")))}})
+   {:redirect-to-client (fn [_] (response/redirect "/app"))
+    :client             #'client
+    :js-resource
+    #(-> (:uri %)
+         (str/replace #"^/" "")
+         response/resource-response
+         (response/content-type "application/javascript; charset=utf-8"))
+    :css
+    (fn [_] (-> (response/resource-response "bridge.css")
+               (response/content-type "text/css; charset=utf-8")))}})
