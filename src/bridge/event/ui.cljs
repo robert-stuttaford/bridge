@@ -1,12 +1,17 @@
 (ns bridge.event.ui
-  (:require [bridge.ui.ajax :as ui.ajax]
+  (:require bridge.event.ui.create
+            bridge.event.ui.edit
+            bridge.event.ui.list
+            [bridge.ui.ajax :as ui.ajax]
             [bridge.ui.base :as ui.base]
             [bridge.ui.spec :as ui.spec]
             [bridge.ui.util :refer [<== ==>]]
-            bridge.event.ui.create
-            bridge.event.ui.edit
-            bridge.event.ui.list
             [re-frame.core :as rf]))
+
+(def routes
+  {"/events" {""                     :list-events
+              "/create"              :create-event
+              ["/edit/" :event-slug] :edit-event}})
 
 (rf/reg-sub ::events (fn [db _] (::events db)))
 

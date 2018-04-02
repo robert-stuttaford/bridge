@@ -20,7 +20,12 @@
                    edn/read-string)
            bridge.ui/initial-state)))
 
+(def routes
+  ["/app"
+   (merge {"" :home}
+          bridge.event.ui/routes)])
+
 (defn ^:export refresh []
+  (ui.routes/start-routing! routes)
   (rf/dispatch-sync [::initialize])
-  (ui.routes/app-routes)
   (r/render [ui.frame/app] (js/document.getElementById "mount")))
