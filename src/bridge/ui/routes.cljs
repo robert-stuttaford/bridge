@@ -17,8 +17,8 @@
 (def route->url (partial bidi/path-for routes))
 
 (defn dispatch-route [{:keys [handler route-params]}]
-  (rf/dispatch [::set-view {:view   handler
-                            :params route-params}]))
+  (rf/dispatch [:bridge.ui/set-view {:view   handler
+                                     :params route-params}]))
 
 (defn dispatch-fn-for-route [url]
   (let [route (url->route url)]
@@ -32,15 +32,3 @@
 
 (defn app-routes []
   (pushy/start! (pushy/pushy dispatch-route url->route)))
-
-;;; View handling
-
-(rf/reg-event-db ::set-view
-  (fn [db [_ view]]
-    (assoc db ::current-view view)))
-
-(def initial-state
-  {::current-view {:view   :home
-                   :params {}}})
-
-(rf/reg-sub ::current-view (fn [db _] (::current-view db)))

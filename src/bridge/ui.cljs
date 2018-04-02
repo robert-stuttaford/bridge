@@ -23,8 +23,22 @@
 
 (defmethod ui.base/view :home [_] [:div "home"])
 
+;;; View handling
+
+(rf/reg-event-fx ::set-view
+  (fn [{:keys [db]} [_ view]]
+    (let [load-on-view (ui.base/load-on-view view)]
+      (cond-> {:db (assoc db ::current-view view)}
+        (some? load-on-view) (assoc :dispatch load-on-view)))))
+
+(def initial-state
+  {::current-view {:view   :home
+                   :params {}}})
+
+(rf/reg-sub ::current-view (fn [db _] (::current-view db)))
+
 (defn app []
   [:div
    [navbar]
    [:div.container {:style {:margin-top "50px"}}
-    (ui.base/view @(rf/subscribe [:bridge.ui.routes/current-view]))]])
+    (ui.base/view @(rf/subscribe [::current-view]))]])

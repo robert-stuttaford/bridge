@@ -12,7 +12,7 @@
     (merge (some-> (js/document.getElementById "initial-data")
                    .-textContent
                    edn/read-string)
-           ui.routes/initial-state)))
+           bridge.ui/initial-state)))
 
 (defn ^:export refresh []
   (rf/dispatch-sync [::initialize])
