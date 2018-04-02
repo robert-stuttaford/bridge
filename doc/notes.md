@@ -1,3 +1,6 @@
+docstrings for all engine code
+plug in http://gdeer81.github.io/marginalia/ / https://github.com/gdeer81/lein-marginalia/blob/master/src/leiningen/marg.clj
+
 normalise all inputs `(java.text.Normalizer/normalize s java.text.Normalizer$Form/NFC)`
 
 # generate emails

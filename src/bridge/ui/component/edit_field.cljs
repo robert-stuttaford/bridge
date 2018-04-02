@@ -3,6 +3,8 @@
             [clojure.spec.alpha :as s]
             [reagent.core :as r]))
 
+;; TODO spec everything in :field/*
+
 (defn reset-edit-state! [*edit value]
   (reset! *edit {:edit-value value}))
 
