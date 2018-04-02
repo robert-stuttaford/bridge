@@ -1,15 +1,13 @@
 (ns bridge.event.ui.edit
   (:require [bridge.data.date :as data.date]
             [bridge.data.string :as data.string]
-            [bridge.ui.base :as ui.base]
-            [reagent.core :as r]
-            [re-frame.core :as rf]))
+            [bridge.ui.util :refer [<== ==>]]))
 
 (defn edit-event [event-slug]
   (if-some [{:event/keys [title slug status start-date end-date
                           registration-close-date organisers
                           details-markdown notes-markdown]}
-            (get @(rf/subscribe [:bridge.event.ui/events]) event-slug)]
+            (get (<== [:bridge.event.ui/events]) event-slug)]
     [:div.column.is-two-fifths
      [:h3.title.is-4.spaced "Edit event"]
 
@@ -29,9 +27,3 @@
         [:pre "details-markdown: " (pr-str details-markdown)]
         [:pre "notes-markdown: " (pr-str notes-markdown)]]]]]
     [:p "No event."]))
-
-(defmethod ui.base/load-on-view :edit-event [{{:keys [event-slug]} :params}]
-  [:bridge.event.ui/event-for-editing [:event/slug event-slug]])
-
-(defmethod ui.base/view :edit-event [{{:keys [event-slug]} :params}]
-  [edit-event event-slug])

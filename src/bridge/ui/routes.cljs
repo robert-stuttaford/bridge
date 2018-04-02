@@ -1,7 +1,7 @@
 (ns bridge.ui.routes
   (:require [bidi.bidi :as bidi]
-            [pushy.core :as pushy]
-            [re-frame.core :as rf]))
+            [bridge.ui.util :refer [<== ==>]]
+            [pushy.core :as pushy]))
 
 (def routes
   ["/app"
@@ -17,8 +17,8 @@
 (def route->url (partial bidi/path-for routes))
 
 (defn dispatch-route [{:keys [handler route-params]}]
-  (rf/dispatch [:bridge.ui/set-view {:view   handler
-                                     :params route-params}]))
+  (==> [:bridge.ui/set-view {:view   handler
+                             :params route-params}]))
 
 (defn dispatch-fn-for-route [url]
   (let [route (url->route url)]

@@ -2,18 +2,18 @@
   (:require cljsjs.moment
             cljsjs.prop-types ; not in React 16.2+, but react-dates still uses it
             cljsjs.react-dates
-            [reagent.core :as reagent]))
+            [reagent.core :as r]))
 
 (def moment->date #(.toDate %))
 
 (def date->moment js/moment)
 
 (def date-range-picker
-  (reagent/adapt-react-class js/ReactDates.DateRangePicker))
+  (r/adapt-react-class js/ReactDates.DateRangePicker))
 
 (defn select-dates [*form start-date-key initial-start-date
                     end-date-key initial-end-date]
-  (let [*focused (reagent/atom {})]
+  (let [*focused (r/atom {})]
     (fn []
       (let [focused    @*focused
             start-date (some-> (or (get @*form start-date-key) initial-start-date)

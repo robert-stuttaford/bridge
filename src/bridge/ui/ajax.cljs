@@ -20,3 +20,6 @@
 (rf/reg-event-fx ::http-post-failure
   (fn [db [_ result]]
     (prn ::http-post-failure result)))
+
+(defn action [action params on-success]
+  [::http-post (assoc params :action action) on-success])

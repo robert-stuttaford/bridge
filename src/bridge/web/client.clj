@@ -17,10 +17,11 @@
                {:keys [identity]} :session}]
   (web.template/hiccup-response
    [:div#mount]
-   (edn-script-tag "initial-data"
-                   #:bridge.ui{:active-person  (datomic/pull db [:person/name] identity)
-                               ;; TODO parameterise
-                               :active-chapter [:chapter/slug "clojurebridge-hermanus"]})
+   (edn-script-tag
+    "initial-state"
+    #:bridge.ui{:active-person  (datomic/pull db [:person/name] identity)
+                ;; TODO parameterise
+                :active-chapter [:chapter/slug "clojurebridge-hermanus"]})
    [:script {:src "/js/app.js"}]
    [:script "bridge.main.refresh();"]))
 
