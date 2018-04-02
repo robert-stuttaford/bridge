@@ -13,7 +13,22 @@
               "/create"              :create-event
               ["/edit/" :event-slug] :edit-event}})
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; events db
+
 (rf/reg-sub ::events (fn [db _] (::events db)))
+
+(defn set-event [db {:event/keys [slug] :as event}]
+  (update db ::events assoc
+          [:event/slug slug] event))
+
+(defn set-events [db events]
+  (update db ::events merge
+          (into {}
+                (map (juxt (fn [{:event/keys [slug]}]
+                             [:event/slug slug])
+                           identity))
+                events)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; create-event
@@ -29,8 +44,8 @@
 
 (rf/reg-event-db ::save-new-event-complete
   [ui.spec/check-spec-interceptor]
-  (fn [db [_ {:event/keys [slug] :as event}]]
-    (assoc-in db [::events slug] event)))
+  (fn [db [_ event]]
+    (set-event db event)))
 
 (defmethod ui.base/view :create-event [_]
   [bridge.event.ui.create/create-event])
@@ -49,10 +64,7 @@
 (rf/reg-event-db ::list-events-for-chapter-complete
   [ui.spec/check-spec-interceptor]
   (fn [db [_ events]]
-    (update db ::events merge
-            (into {}
-                  (map (juxt :event/slug identity))
-                  events))))
+    (set-events db events)))
 
 (defmethod ui.base/load-on-view :list-events [_]
   [::list-events-for-chapter (<== [:bridge.ui/active-chapter])])
@@ -73,8 +85,25 @@
 
 (rf/reg-event-db ::event-for-editing-complete
   [ui.spec/check-spec-interceptor]
-  (fn [db [_ {:event/keys [slug] :as event}]]
-    (update db ::events assoc slug event)))
+  (fn [db [_ event]]
+    (set-event db event)))
+
+(rf/reg-event-fx ::update-field-value!
+  [ui.spec/check-spec-interceptor]
+  (fn [db [_ field-update]]
+    {:dispatch
+     (ui.ajax/action :bridge.event.api/update-field-value!
+                     {:field-update field-update}
+                     [::update-field-value-complete field-update])}))
+
+(rf/reg-event-db ::update-field-value-complete
+  [ui.spec/check-spec-interceptor]
+  (fn [db [_ field-update event]]
+    (set-event db event)
+    ;; TODO if (:field-update/attr field-update) is :event/slug :
+    ;; - dissoc old slug key?
+    ;; - go to edit url for new slug
+    ))
 
 (defmethod ui.base/load-on-view :edit-event [{{:keys [event-slug]} :params}]
   [::event-for-editing [:event/slug event-slug]])

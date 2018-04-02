@@ -8,6 +8,21 @@
 
 (def date->moment js/moment)
 
+(def day-picker
+  (r/adapt-react-class js/ReactDates.SingleDatePicker))
+
+(defn select-date [*form date-key initial-date]
+  (let [*focused (r/atom nil)]
+    (fn []
+      (let [date (some-> (or (get @*form date-key) initial-date)
+                         date->moment)]
+        [day-picker
+         (cond-> {:id              "day-picker"
+                  :focused         (boolean @*focused)
+                  :on-focus-change #(reset! *focused (get (js->clj %) "focused"))
+                  :on-date-change  #(swap! *form assoc date-key (moment->date %))}
+           date (assoc :date date))]))))
+
 (def date-range-picker
   (r/adapt-react-class js/ReactDates.DateRangePicker))
 

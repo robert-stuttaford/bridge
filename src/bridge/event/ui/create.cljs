@@ -23,10 +23,13 @@
            :placeholder "Event Title"
            :on-change   #(swap! *form assoc :event/title
                                 (.. % -currentTarget -value))}]]]
+
        [:div.field
         [:label.label "Event Date(s)"]
         [:div.control
-         [ui.date/select-dates *form :event/start-date nil :event/end-date nil]]]
+         [ui.date/select-dates *form
+          :event/start-date nil
+          :event/end-date nil]]]
 
        [:div.field.is-grouped
         [:div.control

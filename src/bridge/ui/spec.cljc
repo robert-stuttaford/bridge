@@ -17,7 +17,7 @@
   (s/keys :req-un [:bridge.ui/view :bridge.ui/params]))
 
 (s/def :bridge.event.ui/events
-  (s/map-of :bridge.spec/slug :bridge/event))
+  (s/map-of :bridge.datomic/ref :bridge/event))
 
 (s/def :bridge.ui/db
   (s/keys :req [:bridge.ui/active-person

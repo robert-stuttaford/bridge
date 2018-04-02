@@ -63,11 +63,11 @@
   (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
 
   (let [result (api.base/api (merge (TEST-PAYLOAD)
-                                    {:action   ::event.api/update-field-value!
-                                     :event-id [:event/slug "april-event"]
+                                    {:action       ::event.api/update-field-value!
                                      :field-update
-                                     #:field{:attr  :event/notes-markdown
-                                             :value "# notes"}}))]
+                                     #:field{:entity-id [:event/slug "april-event"]
+                                             :attr      :event/notes-markdown
+                                             :value     "# notes"}}))]
 
     (is (= (:event/notes-markdown result)
            "# notes"))))
