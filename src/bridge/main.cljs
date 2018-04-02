@@ -4,8 +4,14 @@
             bridge.event.ui
             [bridge.ui.routes :as ui.routes]
             [cljs.reader :as edn]
+            [clojure.spec.alpha :as s]
+            [expound.alpha :as expound]
             [reagent.core :as r]
             [re-frame.core :as rf]))
+
+(set! s/*explain-out* expound/printer)
+
+(s/check-asserts true)
 
 (rf/reg-event-db ::initialize
   (fn [_ _]

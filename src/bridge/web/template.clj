@@ -17,5 +17,6 @@
 
 (defn hiccup-response [& content]
   (-> content
+      ;; TODO switch to normal hiccup
       rum/render-static-markup
       template-response))

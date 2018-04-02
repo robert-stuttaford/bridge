@@ -1,5 +1,6 @@
 (ns bridge.ui
   (:require [bridge.ui.base :as ui.base]
+            [bridge.ui.spec :as ui.spec]
             [re-frame.core :as rf]))
 
 (rf/reg-sub ::active-person (fn [db _] (::active-person db)))
@@ -10,6 +11,7 @@
                    :params {}}})
 
 (rf/reg-event-fx ::set-view
+  [ui.spec/check-spec-interceptor]
   (fn [{:keys [db]} [_ view]]
     (let [load-on-view (ui.base/load-on-view view)]
       (cond-> {:db (assoc db ::current-view view)}

@@ -26,6 +26,8 @@
   [:event/title
    :event/slug
    :event/status
+   {:event/chapter [:chapter/slug]}
+   {:event/organisers [:person/name]}
    :event/start-date
    :event/end-date
    :event/registration-close-date])

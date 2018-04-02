@@ -1,6 +1,7 @@
 (ns bridge.event.ui
   (:require [bridge.ui.ajax :as ui.ajax]
             [bridge.ui.base :as ui.base]
+            [bridge.ui.spec :as ui.spec]
             [bridge.ui.util :refer [<== ==>]]
             bridge.event.ui.create
             bridge.event.ui.edit
@@ -13,6 +14,7 @@
 ;;; create-event
 
 (rf/reg-event-fx ::save-new-event!
+  [ui.spec/check-spec-interceptor]
   (fn [db [_ chapter-id new-event]]
     {:dispatch
      (ui.ajax/action :bridge.event.api/save-new-event!
@@ -21,6 +23,7 @@
                      [::save-new-event-complete])}))
 
 (rf/reg-event-db ::save-new-event-complete
+  [ui.spec/check-spec-interceptor]
   (fn [db [_ {:event/keys [slug] :as event}]]
     (assoc-in db [::events slug] event)))
 
@@ -31,6 +34,7 @@
 ;; list-events
 
 (rf/reg-event-fx ::list-events-for-chapter
+  [ui.spec/check-spec-interceptor]
   (fn [db [_ chapter-id]]
     {:dispatch
      (ui.ajax/action :bridge.event.api/list-events-for-chapter
@@ -38,6 +42,7 @@
                      [::list-events-for-chapter-complete])}))
 
 (rf/reg-event-db ::list-events-for-chapter-complete
+  [ui.spec/check-spec-interceptor]
   (fn [db [_ events]]
     (update db ::events merge
             (into {}
@@ -54,6 +59,7 @@
 ;; edit-event
 
 (rf/reg-event-fx ::event-for-editing
+  [ui.spec/check-spec-interceptor]
   (fn [db [_ event-id]]
     {:dispatch
      (ui.ajax/action :bridge.event.api/event-for-editing
@@ -61,6 +67,7 @@
                      [::event-for-editing-complete])}))
 
 (rf/reg-event-db ::event-for-editing-complete
+  [ui.spec/check-spec-interceptor]
   (fn [db [_ {:event/keys [slug] :as event}]]
     (update db ::events assoc slug event)))
 
