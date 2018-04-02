@@ -1,7 +1,7 @@
 (ns bridge.main
-  (:require bridge.ui
+  (:require bridge.event.ui
+            bridge.ui
             [bridge.ui.frame :as ui.frame]
-            bridge.event.ui
             [bridge.ui.routes :as ui.routes]
             [cljs.reader :as edn]
             [clojure.spec.alpha :as s]
