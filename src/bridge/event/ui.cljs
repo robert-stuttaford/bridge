@@ -6,7 +6,8 @@
             [bridge.ui.base :as ui.base]
             [bridge.ui.spec :as ui.spec]
             [bridge.ui.util :refer [<== ==>]]
-            [re-frame.core :as rf]))
+            [re-frame.core :as rf]
+            [day8.re-frame.tracing :refer-macros [fn-traced]]))
 
 (def routes
   {"/events" {""                     :list-events
@@ -35,7 +36,7 @@
 
 (rf/reg-event-fx ::save-new-event!
   [ui.spec/check-spec-interceptor]
-  (fn [db [_ chapter-id new-event]]
+  (fn-traced [db [_ chapter-id new-event]]
     {:dispatch
      (ui.ajax/action :bridge.event.api/save-new-event!
                      {:chapter-id chapter-id
