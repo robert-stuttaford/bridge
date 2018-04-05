@@ -1,3 +1,5 @@
+test datomic connection failures - does holding on to a conn work?
+
 docstrings for all engine code
 plug in http://gdeer81.github.io/marginalia/ / https://github.com/gdeer81/lein-marginalia/blob/master/src/leiningen/marg.clj
 
