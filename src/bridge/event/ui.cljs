@@ -41,10 +41,12 @@
                       :new-event  new-event}
                      [::save-new-event-complete])}))
 
-(rf/reg-event-db ::save-new-event-complete
+(rf/reg-event-fx ::save-new-event-complete
   [ui.spec/check-spec-interceptor]
-  (fn [db [_ event]]
-    (set-event db event)))
+  (fn [{:keys [db]} [_ {:event/keys [slug] :as event}]]
+    {:db                (set-event db event)
+     :set-history-token {:view   :edit-event
+                         :params {:event-slug slug}}}))
 
 (defmethod ui.base/view :create-event [_]
   [bridge.event.ui.create/create-event])

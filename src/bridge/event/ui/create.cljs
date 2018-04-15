@@ -31,6 +31,11 @@
           :event/start-date nil
           :event/end-date nil]]]
 
+       [:div.is-divider]
+
+       [:div.content
+        [:p "You'll be able to edit event details on the next page."]]
+
        [:div.field.is-grouped
         [:div.control
          [:button.button.is-link
