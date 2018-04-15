@@ -7,28 +7,42 @@
 
 (defn list-events []
   [:div
-   [:h3.title.is-4.spaced "All Events"]
-   [:a.button {:href     "javascript:"
-               :on-click #(==> (ui.base/load-on-view {:view :list-events}))}
-    "Refresh"]
+   [:div.level
+    [:div.level-left
+     [:div.level-item
+      [:h3.title.is-4.spaced "All Events"]]]
+    [:div.level-right
+     [:a.button {:href     "javascript:"
+                 :on-click #(==> (ui.base/load-on-view {:view :list-events}))}
+      "Refresh"]]]
 
-   (for [events (partition-all 3 (vals (<== [:bridge.event.ui/events])))]
-     [:div.columns {:key (apply str (map :event/slug events))}
-      (for [{:event/keys [title slug status start-date end-date
-                          registration-close-date]}
-            events]
+   (let [events (<== [:bridge.event.ui/events])]
+     (if (empty? events)
 
-        [:div.column.is-one-third {:key slug}
-         [:div.card {:style {:margin-top "2rem"}}
-          [:header.card-header
-           [:p.card-header-title title " (" (data.string/keyword->label status) ")"]]
-          [:div.card-content
-           [:div.content
-            [:strong [data.date/date-time start-date]] " - "
-            [:strong [data.date/date-time end-date]]
-            [:br]
-            "Registration ends "
-            [:strong [data.date/date-time registration-close-date]]]]
-          [:footer.card-footer
-           [:a.card-footer-item (ui.routes/turbo-links (str "/app/events/edit/" slug))
-            "Edit"]]]])])])
+       [:section.hero
+        [:div.hero-body
+         [:div.container
+          [:h1.title "No events yet"]
+          [:br]
+          [:h2.subtitle "Go ahead and "
+           [:a (ui.routes/turbo-links "/app/events/create") "create your first event"]
+           " now!"]]]]
+
+       (for [events (partition-all 3 (vals events))]
+         [:div.columns {:key (apply str (map :event/slug events))}
+          (for [{:event/keys [title slug status start-date end-date
+                              registration-close-date]} events]
+            [:div.column.is-one-third {:key slug}
+             [:div.card {:style {:margin-top "2rem"}}
+              [:header.card-header
+               [:p.card-header-title title " (" (data.string/keyword->label status) ")"]]
+              [:div.card-content
+               [:div.content
+                [:strong [data.date/date-time start-date]] " - "
+                [:strong [data.date/date-time end-date]]
+                [:br]
+                "Registration ends "
+                [:strong [data.date/date-time registration-close-date]]]]
+              [:footer.card-footer
+               [:a.card-footer-item (ui.routes/turbo-links (str "/app/events/edit/" slug))
+                "Edit"]]]])])))])

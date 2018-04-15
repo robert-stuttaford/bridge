@@ -4,34 +4,6 @@
             bridge.data.datomic.spec
             [clojure.spec.alpha :as s]))
 
-(def status-order
-  [:status/draft
-   :status/registering
-   :status/inviting
-   :status/in-progress
-   :status/complete])
-
-(def status->active-verb
-  {:status/registering "Open registration"
-   :status/inviting    "Close registration & send invites"
-   :status/in-progress "Begin event"
-   :status/complete    "Finish event"})
-
-(def status->description
-  {:status/draft       "This event is not yet public."
-   ;; TODO link to registration form
-   :status/registering "Participants may register."
-   :status/inviting    "Registration is closed; awaiting confirmed invitations."
-   :status/in-progress "This event is happening right now!"
-   :status/complete    "This event is all done!"
-   :status/cancelled   "This event is cancelled."})
-
-(def status->valid-next-status
-  {:status/draft       [:status/registering :status/cancelled]
-   :status/registering [:status/inviting    :status/cancelled]
-   :status/inviting    [:status/in-progress :status/cancelled]
-   :status/in-progress [:status/complete    :status/cancelled]})
-
 (s/def :event/status #{:status/draft :status/registering :status/inviting
                        :status/in-progress :status/cancelled :status/complete})
 (s/def :event/title :bridge.spec/required-string)
@@ -67,3 +39,46 @@
                    :opt [:event/details-markdown :event/notes-markdown])))
 
 (s/def :bridge/new-event-tx :bridge/event)
+
+;;; UI strings
+
+(def status-order
+  [:status/draft
+   :status/registering
+   :status/inviting
+   :status/in-progress
+   :status/complete])
+
+(def status->active-verb
+  {:status/registering "Open Registration"
+   :status/inviting    "Close Registration & Send Invites"
+   :status/in-progress "Begin Event"
+   :status/complete    "Finish Event"
+   :status/cancelled   "Cancel Event"})
+
+(def status->description
+  {:status/draft       "This event is not yet public."
+   ;; TODO link to registration form
+   :status/registering "Participants may register."
+   :status/inviting    "Registration is closed; awaiting confirmed invitations."
+   :status/in-progress "This event is happening right now!"
+   :status/complete    "This event is all done!"
+   :status/cancelled   "This event is cancelled."})
+
+(def status->valid-next-status
+  {:status/draft       [:status/registering :status/cancelled]
+   :status/registering [:status/inviting    :status/cancelled]
+   :status/inviting    [:status/in-progress :status/cancelled]
+   :status/in-progress [:status/complete    :status/cancelled]})
+
+(def field->placeholder
+  {:event/details-markdown
+   "Tell folks about this event:
+
+Include start time, information about the location(s), where to park, secret passphrase to use at the door, etc.
+
+Markdown syntax is supported."
+   :event/notes-markdown
+   "Private notes for organisers to share.
+
+Markdown syntax is supported."})

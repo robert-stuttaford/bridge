@@ -1,8 +1,8 @@
 (ns bridge.ui.component.edit-field
   (:require [bridge.data.string :as data.string]
-            [bridge.ui.component.markdown :as ui.markdown]
             [bridge.ui.util :refer [<== ==>]]
             [clojure.spec.alpha :as s]
+            [clojure.string :as str]
             [reagent.core :as r]))
 
 ;; TODO spec everything in :field/*
@@ -27,19 +27,23 @@
             (select-keys [:field/entity-id :field/attr])
             (assoc :field/value edit-value))]))
 
-(defn markdown [content]
-  [:div.content
-   {:style {:padding          "1.5rem"
-            :background-color "#eee"
-            :border-radius    "0.8rem"
-            :min-height       "230px"}
-    :dangerouslySetInnerHTML
-    {:__html (or (-> content
-                     data.string/markdown->html
-                     data.string/not-blank)
-                 "(empty)")}}])
+(defn markdown [content placeholder]
+  (let [using-placeholder? (and (str/blank? content)
+                                (data.string/not-blank placeholder))]
+    [:div.content
+     {:style (cond-> {:padding          "1.5rem"
+                      :background-color "#eee"
+                      :border-radius    "0.8rem"
+                      :min-height       "230px"}
+               using-placeholder? (assoc :color "#999"))
+      :dangerouslySetInnerHTML
+      {:__html (or (-> (or (data.string/not-blank content)
+                           (data.string/not-blank placeholder))
+                       data.string/markdown->html
+                       data.string/not-blank)
+                   "(empty)")}}]))
 
-(defn edit-text-field [{:field/keys [type subscription entity-id attr title]
+(defn edit-text-field [{:field/keys [type subscription entity-id attr title placeholder]
                         :or         {type :text}
                         :as         field}]
   (let [*edit (r/atom {})]
@@ -55,7 +59,8 @@
             [(case type
                (:text :email) :input.input
                :markdown      :textarea.textarea)
-             (cond-> {:placeholder (str title (when invalid? " is required!"))
+             (cond-> {:placeholder (str (or placeholder title)
+                                        (when invalid? " is required!"))
                       :value       edit-value
                       :on-change   #(update-edit-state! *edit attr value
                                                         (.. % -currentTarget -value))
@@ -76,11 +81,11 @@
                dirty?                (assoc :class "is-warning")
                invalid?              (assoc :class "is-danger"))]
             (when invalid?
-              [:span.icon.is-small.is-right [:i.fa.fa-warning]])]
+              [:span.icon.is-small.is-right [:i.fas.fa-warning]])]
            [:div {:on-click #(swap! *edit assoc :editing? true)}
             (case type
               (:text :email) value
-              :markdown      [markdown value])])
+              :markdown      [markdown value placeholder])])
          (when dirty?
            [:div.buttons.is-pulled-right {:style {:margin-top "5px"}}
             [:button.button.is-small.is-primary
