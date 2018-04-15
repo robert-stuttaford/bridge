@@ -1,5 +1,11 @@
 (ns bridge.data.string
-  (:require [clojure.string :as str]))
+  #?@
+  (:clj
+   [(:require [clojure.string :as str])]
+   :cljs
+   [(:require [clojure.string :as str]
+              cljsjs.showdown)
+    (:import goog.i18n.DateTimeFormat)]))
 
 (defn not-blank [s]
   (when-not (str/blank? s)
@@ -9,3 +15,8 @@
   (comp str/capitalize
         #(str/replace % "[-_]" " ")
         name))
+
+#?(:cljs
+   (let [converter (js/showdown.Converter.)]
+     (defn markdown->html [markdown-txt]
+       (.makeHtml converter (or markdown-txt "")))))

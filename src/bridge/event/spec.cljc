@@ -4,6 +4,34 @@
             bridge.data.datomic.spec
             [clojure.spec.alpha :as s]))
 
+(def status-order
+  [:status/draft
+   :status/registering
+   :status/inviting
+   :status/in-progress
+   :status/complete])
+
+(def status->active-verb
+  {:status/registering "Open registration"
+   :status/inviting    "Close registration & send invites"
+   :status/in-progress "Begin event"
+   :status/complete    "Finish event"})
+
+(def status->description
+  {:status/draft       "This event is not yet public."
+   ;; TODO link to registration form
+   :status/registering "Participants may register."
+   :status/inviting    "Registration is closed; awaiting confirmed invitations."
+   :status/in-progress "This event is happening right now!"
+   :status/complete    "This event is all done!"
+   :status/cancelled   "This event is cancelled."})
+
+(def status->valid-next-status
+  {:status/draft       [:status/registering :status/cancelled]
+   :status/registering [:status/inviting    :status/cancelled]
+   :status/inviting    [:status/in-progress :status/cancelled]
+   :status/in-progress [:status/complete    :status/cancelled]})
+
 (s/def :event/status #{:status/draft :status/registering :status/inviting
                        :status/in-progress :status/cancelled :status/complete})
 (s/def :event/title :bridge.spec/required-string)

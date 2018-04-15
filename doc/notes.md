@@ -31,9 +31,16 @@ https://github.com/healthfinch/depstar instead of pack.alpha?
 
 use https://github.com/ingesolvoll/kee-frame for its routing and event chains?
 
+http://ingesolvoll.github.io/posts/2018-04-01-learning-kee-frame-in-5-minutes/
+http://ingesolvoll.github.io/posts/2018-04-01-kee-frame-putting-the-url-in-charge/
+
 testing https://github.com/Day8/re-frame-test
 
 10x function tracing https://github.com/Day8/re-frame-debux#how-to-use
+
+# testing
+
+https://github.com/walmartlabs/test-reporting
 
 # graphviz
 

@@ -51,6 +51,7 @@
   binaryage/devtools         {:mvn/version "0.9.10"}
   cljsjs/react-dates         {:mvn/version "12.2.4-1"}
   cljsjs/prop-types          {:mvn/version "15.6.0-0"}
+  cljsjs/showdown            {:mvn/version "1.4.2-0"}
 
   ;; REPL
   org.clojure/tools.nrepl {:mvn/version "0.2.13"}

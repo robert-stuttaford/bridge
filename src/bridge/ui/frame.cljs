@@ -24,5 +24,5 @@
 (defn app []
   [:div
    [navbar]
-   [:div.container {:style {:margin-top "50px"}}
+   [:div.container {:style {:margin-top "6rem"}}
     (ui.base/view (<== [:bridge.ui/current-view]))]])

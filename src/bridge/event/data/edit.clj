@@ -1,6 +1,7 @@
 (ns bridge.event.data.edit
   (:require [bridge.data.datomic :as datomic]
-            [bridge.data.edit :as data.edit]))
+            [bridge.data.edit :as data.edit]
+            [bridge.event.spec :as event.spec]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Edit
@@ -36,16 +37,12 @@
 
 ;;; :event/status
 
-(def status->valid-next-status
-  {:status/draft       #{:status/registering :status/cancelled}
-   :status/registering #{:status/inviting    :status/cancelled}
-   :status/inviting    #{:status/in-progress :status/cancelled}
-   :status/in-progress #{:status/complete    :status/cancelled}})
-
 (defmethod data.edit/check-custom-validation :event/status
   [db {:field/keys [entity-id value]}]
   (let [current-status       (datomic/attr db entity-id :event/status)
-        possible-next-status (get status->valid-next-status current-status)]
+        possible-next-status (some-> (get event.spec/status->valid-next-status
+                                          current-status)
+                                     set)]
     (cond (nil? possible-next-status)
           {:error :bridge.event.error/status-may-not-change}
 
