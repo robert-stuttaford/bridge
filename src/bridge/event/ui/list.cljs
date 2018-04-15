@@ -28,21 +28,20 @@
            [:a (ui.routes/turbo-links "/app/events/create") "create your first event"]
            " now!"]]]]
 
-       (for [events (partition-all 3 (vals events))]
-         [:div.columns {:key (apply str (map :event/slug events))}
-          (for [{:event/keys [title slug status start-date end-date
-                              registration-close-date]} events]
-            [:div.column.is-one-third {:key slug}
-             [:div.card {:style {:margin-top "2rem"}}
-              [:header.card-header
-               [:p.card-header-title title " (" (data.string/keyword->label status) ")"]]
-              [:div.card-content
-               [:div.content
-                [:strong [data.date/date-time start-date]] " - "
-                [:strong [data.date/date-time end-date]]
-                [:br]
-                "Registration ends "
-                [:strong [data.date/date-time registration-close-date]]]]
-              [:footer.card-footer
-               [:a.card-footer-item (ui.routes/turbo-links (str "/app/events/edit/" slug))
-                "Edit"]]]])])))])
+       [:div.columns.is-multiline
+        (for [{:event/keys [title slug status start-date end-date
+                            registration-close-date]} (vals events)]
+          [:div.column.is-one-third {:key slug}
+           [:div.card {:style {:margin-top "2rem"}}
+            [:header.card-header
+             [:p.card-header-title title " (" (data.string/keyword->label status) ")"]]
+            [:div.card-content
+             [:div.content
+              [:strong [data.date/date-time start-date]] " - "
+              [:strong [data.date/date-time end-date]]
+              [:br]
+              "Registration ends "
+              [:strong [data.date/date-time registration-close-date]]]]
+            [:footer.card-footer
+             [:a.card-footer-item (ui.routes/turbo-links (str "/app/events/edit/" slug))
+              "Edit"]]]])]))])
