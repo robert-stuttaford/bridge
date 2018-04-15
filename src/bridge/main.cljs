@@ -3,6 +3,7 @@
             bridge.ui
             [bridge.ui.frame :as ui.frame]
             [bridge.ui.routes :as ui.routes]
+            [bridge.ui.spec :as ui.spec]
             [cljs.reader :as edn]
             [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
@@ -14,6 +15,7 @@
 (s/check-asserts true)
 
 (rf/reg-event-db ::initialize
+  [ui.spec/check-spec-interceptor]
   (fn [_ _]
     (merge (some-> (js/document.getElementById "initial-state")
                    .-textContent
