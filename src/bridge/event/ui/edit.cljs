@@ -50,6 +50,7 @@
               (merge edit-field #:field{:title "Slug"
                                         :attr  :event/slug})]
 
+             ;; TODO connect to `:bridge.event.ui/update-field-value!`
              [:div.field
               [:label.label "Dates"]
               [:div.control
@@ -57,6 +58,7 @@
                 :event/start-date start-date
                 :event/end-date end-date]]]
 
+             ;; TODO connect to `:bridge.event.ui/update-field-value!`
              [:div.field
               [:label.label "Registration Closes"]
               [:div.control

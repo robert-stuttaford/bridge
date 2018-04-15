@@ -40,6 +40,7 @@
         [:article.media
          [:figure.media-left
           [:p.image.is-64x64
+           ;; FIX this icon isn't positioned in the image bounds
            [:span.icon
             [:i.fas.fa-3x.fa-exclamation-circle]]]]
          [:div.media-content
