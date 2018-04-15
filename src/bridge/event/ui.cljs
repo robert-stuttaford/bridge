@@ -6,7 +6,6 @@
             [bridge.ui.base :as ui.base]
             [bridge.ui.spec :as ui.spec]
             [bridge.ui.util :refer [<== ==>]]
-            [day8.re-frame.tracing :refer-macros [fn-traced]]
             [re-frame.core :as rf]))
 
 (def routes
@@ -20,8 +19,7 @@
 (rf/reg-sub ::events (fn [db _] (::events db)))
 
 (defn set-event [db {:event/keys [slug] :as event}]
-  (update db ::events assoc
-          [:event/slug slug] event))
+  (update db ::events assoc [:event/slug slug] event))
 
 (defn set-events [db events]
   (update db ::events merge
@@ -36,7 +34,7 @@
 
 (rf/reg-event-fx ::save-new-event!
   [ui.spec/check-spec-interceptor]
-  (fn-traced [db [_ chapter-id new-event]]
+  (fn [db [_ chapter-id new-event]]
     {:dispatch
      (ui.ajax/action :bridge.event.api/save-new-event!
                      {:chapter-id chapter-id
@@ -45,7 +43,7 @@
 
 (rf/reg-event-db ::save-new-event-complete
   [ui.spec/check-spec-interceptor]
-  (fn-traced [db [_ event]]
+  (fn [db [_ event]]
     (set-event db event)))
 
 (defmethod ui.base/view :create-event [_]
@@ -56,7 +54,7 @@
 
 (rf/reg-event-fx ::list-events-for-chapter
   [ui.spec/check-spec-interceptor]
-  (fn-traced [db [_ chapter-id]]
+  (fn [db [_ chapter-id]]
     {:dispatch
      (ui.ajax/action :bridge.event.api/list-events-for-chapter
                      {:chapter-id chapter-id}
@@ -64,7 +62,7 @@
 
 (rf/reg-event-db ::list-events-for-chapter-complete
   [ui.spec/check-spec-interceptor]
-  (fn-traced [db [_ events]]
+  (fn [db [_ events]]
     (set-events db events)))
 
 (defmethod ui.base/load-on-view :list-events [_]
@@ -78,7 +76,7 @@
 
 (rf/reg-event-fx ::event-for-editing
   [ui.spec/check-spec-interceptor]
-  (fn-traced [db [_ event-id]]
+  (fn [db [_ event-id]]
     {:dispatch
      (ui.ajax/action :bridge.event.api/event-for-editing
                      {:event-id event-id}
@@ -86,20 +84,20 @@
 
 (rf/reg-event-db ::event-for-editing-complete
   [ui.spec/check-spec-interceptor]
-  (fn-traced [db [_ event]]
+  (fn [db [_ event]]
     (set-event db event)))
 
 (rf/reg-event-fx ::update-field-value!
   [ui.spec/check-spec-interceptor]
-  (fn-traced [db [_ field-update]]
-    {:dispatch
-     (ui.ajax/action :bridge.event.api/update-field-value!
-                     {:field-update field-update}
-                     [::update-field-value-complete field-update])}))
+  (fn [{:keys [db]} [_ {:field/keys [entity-id attr value] :as field-update}]]
+    {:db       (update db ::events assoc-in [entity-id attr] value)
+     :dispatch (ui.ajax/action :bridge.event.api/update-field-value!
+                               {:field-update field-update}
+                               [::update-field-value-complete field-update])}))
 
 (rf/reg-event-db ::update-field-value-complete
   [ui.spec/check-spec-interceptor]
-  (fn-traced [db [_ field-update event]]
+  (fn [db [_ field-update event]]
     (set-event db event)
     ;; TODO if (:field-update/attr field-update) is :event/slug :
     ;; - dissoc old slug key?

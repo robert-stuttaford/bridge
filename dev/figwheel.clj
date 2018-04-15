@@ -17,13 +17,11 @@
       :asset-path      "/js/out"
       :optimizations   :none
       :source-map      true
-      :closure-defines {"re_frame.trace.trace_enabled_QMARK_"        true
-                        "day8.re_frame.tracing.trace_enabled_QMARK_" true}
+      ;; :closure-defines {"re_frame.trace.trace_enabled_QMARK_"        true
+      ;;                   "day8.re_frame.tracing.trace_enabled_QMARK_" true}
       :preloads        ['devtools.preload
-                        'day8.re-frame-10x.preload]
-      :external-config
-      {:devtools/config
-       {:features-to-install [:formatters :hints]}}}}]})
+                        ;; 'day8.re-frame-10x.preload
+                        ]}}]})
 
 (spit ".nrepl-port" (get-in figwheel-options [:figwheel-options :nrepl-port]))
 
