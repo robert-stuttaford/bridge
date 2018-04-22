@@ -1,10 +1,7 @@
 (ns bridge.main
-  (:require bridge.event.ui
-            bridge.ui
+  (:require [bridge.ui :as ui]
             [bridge.ui.frame :as ui.frame]
             [bridge.ui.routes :as ui.routes]
-            [bridge.ui.spec :as ui.spec]
-            [cljs.reader :as edn]
             [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
             [reagent.core :as r]
@@ -14,20 +11,7 @@
 
 (s/check-asserts true)
 
-(rf/reg-event-db ::initialize
-  [ui.spec/check-spec-interceptor]
-  (fn [_ _]
-    (merge (some-> (js/document.getElementById "initial-state")
-                   .-textContent
-                   edn/read-string)
-           bridge.ui/initial-state)))
-
-(def routes
-  ["/app"
-   (merge {"" :home}
-          bridge.event.ui/routes)])
-
 (defn ^:export refresh []
-  (ui.routes/start-routing! routes)
-  (rf/dispatch-sync [::initialize])
+  (ui.routes/start-routing! ui/app-routes)
+  (rf/dispatch-sync [:bridge.ui/initialize])
   (r/render [ui.frame/app] (js/document.getElementById "mount")))
