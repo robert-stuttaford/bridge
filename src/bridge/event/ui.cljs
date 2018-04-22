@@ -5,7 +5,7 @@
             [bridge.ui.ajax :as ui.ajax]
             [bridge.ui.base :as ui.base]
             [bridge.ui.spec :as ui.spec]
-            [bridge.ui.util :refer [<== ==>]]
+            [bridge.ui.util :refer [<== ==> log]]
             [re-frame.core :as rf]))
 
 (def routes

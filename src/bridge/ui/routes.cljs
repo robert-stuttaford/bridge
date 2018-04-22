@@ -1,6 +1,6 @@
 (ns bridge.ui.routes
   (:require [bidi.bidi :as bidi]
-            [bridge.ui.util :refer [<== ==>]]
+            [bridge.ui.util :refer [<== ==> log]]
             [pushy.core :as pushy]
             [re-frame.core :as rf]))
 

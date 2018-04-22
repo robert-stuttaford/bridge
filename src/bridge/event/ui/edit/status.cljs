@@ -3,7 +3,7 @@
             [bridge.data.string :as data.string]
             [bridge.event.spec :as event.spec]
             [bridge.ui.component.modal :as ui.modal]
-            [bridge.ui.util :refer [<== ==>]]
+            [bridge.ui.util :refer [<== ==> log]]
             [reagent.core :as r]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -31,9 +31,7 @@
 (defn confirm-change-event-status-modal [*confirm-next-status slug]
   (when-some [next-status @*confirm-next-status]
     (let [close-confirm-modal-fn #(reset! *confirm-next-status nil)
-          status-verb            (-> next-status
-                                     event.spec/status->active-verb
-                                     data.string/keyword->label)]
+          status-verb            (event.spec/status->active-verb next-status)]
       [ui.modal/modal {:is-active?-fn #(some? @*confirm-next-status)
                        :close!-fn     close-confirm-modal-fn}
        [:div.notification.is-warning
@@ -67,15 +65,11 @@
             [:div.level-item.buttons
              [:button.button.is-primary
               {:on-click #(reset! *confirm-next-status next-status)}
-              (-> next-status
-                  event.spec/status->active-verb
-                  data.string/keyword->label)]
+              (event.spec/status->active-verb next-status)]
              (when (some? cancel-status)
                [:button.button.is-warning
                 {:on-click #(reset! *confirm-next-status cancel-status)}
-                (-> cancel-status
-                    event.spec/status->active-verb
-                    data.string/keyword->label)])
+                (event.spec/status->active-verb cancel-status)])
              [confirm-change-event-status-modal *confirm-next-status slug]]))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

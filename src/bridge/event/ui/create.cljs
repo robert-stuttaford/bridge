@@ -2,7 +2,7 @@
   (:require bridge.event.spec
             [bridge.ui.routes :as ui.routes]
             [bridge.ui.component.date :as ui.date]
-            [bridge.ui.util :refer [<== ==>]]
+            [bridge.ui.util :refer [<== ==> log]]
             [clojure.spec.alpha :as s]
             [reagent.core :as r]))
 

@@ -1,6 +1,6 @@
 (ns bridge.ui.component.edit-field
   (:require [bridge.data.string :as data.string]
-            [bridge.ui.util :refer [<== ==>]]
+            [bridge.ui.util :refer [<== ==> log]]
             [clojure.spec.alpha :as s]
             [clojure.string :as str]
             [reagent.core :as r]))

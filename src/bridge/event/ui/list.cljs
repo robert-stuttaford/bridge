@@ -3,7 +3,7 @@
             [bridge.data.string :as data.string]
             [bridge.ui.base :as ui.base]
             [bridge.ui.routes :as ui.routes]
-            [bridge.ui.util :refer [<== ==>]]))
+            [bridge.ui.util :refer [<== ==> log]]))
 
 (defn list-events []
   [:div

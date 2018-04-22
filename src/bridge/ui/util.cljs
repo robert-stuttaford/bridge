@@ -3,3 +3,5 @@
 
 (def <== (comp deref rf/subscribe))
 (def ==> rf/dispatch)
+
+(def log js/console.log)

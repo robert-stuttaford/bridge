@@ -1,7 +1,7 @@
 (ns bridge.ui.frame
   (:require [bridge.ui.base :as ui.base]
             [bridge.ui.routes :as ui.routes]
-            [bridge.ui.util :refer [<== ==>]]))
+            [bridge.ui.util :refer [<== ==> log]]))
 
 (defmethod ui.base/view :home [_]
   [:div "home"])

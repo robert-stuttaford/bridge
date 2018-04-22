@@ -3,7 +3,7 @@
             [bridge.event.ui.edit.status :as ui.event.edit.status]
             [bridge.ui.component.date :as ui.date]
             [bridge.ui.component.edit-field :as ui.edit-field]
-            [bridge.ui.util :refer [<== ==>]]
+            [bridge.ui.util :refer [<== ==> log]]
             [reagent.core :as r]))
 
 (def edit-field
