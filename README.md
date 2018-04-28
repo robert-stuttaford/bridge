@@ -7,7 +7,7 @@ Dev diary:
 - [Bridge dev diary: Datomic mode](https://www.stuttaford.me/2018/03/03/bridge-dev-diary--datomic-mode/) — 3 March, 2018
 - [Bridge dev diary: Modelling access](https://www.stuttaford.me/2018/03/17/bridge-dev-diary--modelling-access/) — 17 March, 2018
 - [Bridge dev diary: Events API](https://www.stuttaford.me/2018/03/31/bridge-dev-diary--events-api/) — 31 March, 2018
-- [Bridge dev diary: Events UI](https://www.stuttaford.me/2018/04/22/bridge-dev-diary--events-ui/) — 22 April, 2018
+- [Bridge dev diary: Events UI](https://www.stuttaford.me/2018/04/28/bridge-dev-diary--events-ui/) — 28 April, 2018
 
 ## Development
 
