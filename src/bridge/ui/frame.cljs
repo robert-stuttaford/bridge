@@ -1,5 +1,6 @@
 (ns bridge.ui.frame
   (:require [bridge.ui.base :as ui.base]
+            [bridge.ui.component.modal :as ui.modal]
             [bridge.ui.routes :as ui.routes]
             [bridge.ui.util :refer [<== ==> log]]
             [reagent.core :as r]))
@@ -44,8 +45,16 @@
             [:div.navbar-item (:person/name (<== [:bridge.ui/active-person]))]
             [:a.navbar-item {:href "/logout"} "Sign Out"]]]]]))))
 
+(defn error-modal []
+  (when-some [error (<== [:bridge.ui/network-error])]
+    [ui.modal/warning-modal {:is-active?-fn (constantly true)
+                             :close!-fn     identity}
+     [:div "There was a network error:"
+      [:pre (pr-str error)]]]))
+
 (defn app []
   [:div
    [navbar]
    [:div.container {:style {:margin-top "6rem"}}
-    (ui.base/view (<== [:bridge.ui/current-view]))]])
+    (ui.base/view (<== [:bridge.ui/current-view]))
+    [error-modal]]])

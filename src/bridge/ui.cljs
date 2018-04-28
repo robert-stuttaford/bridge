@@ -13,6 +13,8 @@
 (rf/reg-sub ::active-person (fn [db _] (::active-person db)))
 (rf/reg-sub ::active-chapter (fn [db _] (::active-chapter db)))
 
+(rf/reg-sub ::network-error (fn [db _] (::network-error db)))
+
 (def initial-state
   {::current-view {:view   :home
                    :params {}}})

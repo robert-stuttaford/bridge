@@ -19,27 +19,19 @@
   (when-some [next-status @*confirm-next-status]
     (let [close-confirm-modal-fn #(reset! *confirm-next-status nil)
           status-verb            (event.spec/status->active-verb next-status)]
-      [ui.modal/modal {:is-active?-fn #(some? @*confirm-next-status)
-                       :close!-fn     close-confirm-modal-fn}
-       [:div.notification.is-warning
-        [:article.media
-         [:figure.media-left
-          [:p.image.is-64x64
-           ;; FIX this icon isn't positioned in the image bounds
-           [:span.icon
-            [:i.fas.fa-3x.fa-exclamation-circle]]]]
-         [:div.media-content
-          [:div.content
-           [:p "You're planning to: " [:u status-verb]]
-           [:p "Changing this event's status is permanent!"]
-           [:p "Are you sure?"]]
-          [:div.is-divider {:style {:border-top ".1rem solid #4a4a4a"}}]
-          [:div.buttons
-           [:button.button.is-danger {:on-click #(do (close-confirm-modal-fn)
-                                                     (set-new-status! slug next-status))}
-            "Yes - " status-verb]
-           [:button.button.is-text {:on-click close-confirm-modal-fn}
-            "No - cancel"]]]]]])))
+      [ui.modal/warning-modal {:is-active?-fn #(some? @*confirm-next-status)
+                               :close!-fn     close-confirm-modal-fn}
+       [:div.content
+        [:p "You're planning to: " [:u status-verb]]
+        [:p "Changing this event's status is permanent!"]
+        [:p "Are you sure?"]]
+       [:div.is-divider {:style {:border-top ".1rem solid #4a4a4a"}}]
+       [:div.buttons
+        [:button.button.is-danger {:on-click #(do (close-confirm-modal-fn)
+                                                  (set-new-status! slug next-status))}
+         "Yes - " status-verb]
+        [:button.button.is-text {:on-click close-confirm-modal-fn}
+         "No - cancel"]]])))
 
 (defn edit-event-status [{:field/keys [subscription entity-id]}]
   (let [*confirm-next-status (r/atom nil)]

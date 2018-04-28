@@ -15,11 +15,10 @@
               :on-failure      [::http-post-failure]}
        on-success (assoc :on-success on-success))}))
 
-;; TODO display generic network failure message
-
 (rf/reg-event-fx ::http-post-failure
-  (fn [db [_ result]]
-    (prn ::http-post-failure result)))
+  (fn [{:keys [db]} [_ result]]
+    (prn ::http-post-failure result)
+    {:db (assoc db :bridge.ui/network-error result)}))
 
 (defn action [action params on-success]
   [::http-post (assoc params :action action) on-success])
