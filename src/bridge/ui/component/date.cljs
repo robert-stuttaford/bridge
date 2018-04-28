@@ -45,8 +45,8 @@
 (defn select-dates-for-form [*form start-date-key initial-start-date
                              end-date-key initial-end-date]
   [select-dates
-   (constantly (or (get @*form start-date-key) initial-start-date))
-   (constantly (or (get @*form end-date-key) initial-end-date))
+   #(or (get @*form start-date-key) initial-start-date)
+   #(or (get @*form end-date-key) initial-end-date)
    #(swap! *form
            (fn [state]
              (let [{:keys [start end]} %]
