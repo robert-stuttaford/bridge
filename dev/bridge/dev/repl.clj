@@ -24,9 +24,4 @@
 
   (set-datomic-mode! :client)
   (set-datomic-mode! :peer)
-
-  (conn)
-
-  (datomic/pull (db) '[*] [:person/email "test@cb.org"])
-
   )

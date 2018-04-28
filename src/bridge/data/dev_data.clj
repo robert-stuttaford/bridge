@@ -2,14 +2,19 @@
   (:require [bridge.chapter.data :as chapter.data]
             [bridge.chapter.schema :as chapter.schema]
             [bridge.data.datomic :as datomic]
-            [bridge.data.slug :as slug]
+            [bridge.data.slug :as data.slug]
+            [bridge.dev.repl :as repl]
+            [bridge.event.api :as event.api]
+            [bridge.event.data :as event.data]
             [bridge.event.schema :as event.schema]
             [bridge.person.data :as person.data]
             [bridge.person.schema :as person.schema]
+            [bridge.web.api.base :as api.base]
             [integrant.core :as ig]))
 
 (defn add-chapter! [conn organiser-id {:chapter/keys [title] :as new-chapter}]
-  (when (nil? (chapter.data/chapter-id-by-slug (datomic/db conn) (slug/->slug title)))
+  (when (nil? (chapter.data/chapter-id-by-slug (datomic/db conn)
+                                               (data.slug/->slug title)))
     (->> (chapter.data/new-chapter-tx organiser-id new-chapter)
          (chapter.data/save-new-chapter! conn))))
 
@@ -20,6 +25,15 @@
       (person.data/confirm-email! conn
                                   (person.data/person-id-by-email (datomic/db conn) email)
                                   (:person/confirm-email-token new-person-tx)))))
+
+(defn add-event! [conn chapter-id organiser-id {:event/keys [title] :as new-event}]
+  (when (nil? (event.data/event-id-by-slug (datomic/db conn) (data.slug/->slug title)))
+    (api.base/api {:datomic/db       (datomic/db conn)
+                   :datomic/conn     conn
+                   :action           ::event.api/save-new-event!
+                   :chapter-id       chapter-id
+                   :active-person-id organiser-id
+                   :new-event        new-event})))
 
 (defmethod ig/init-key :datomic/dev-data [_ {{:datomic/keys [mode conn]} :datomic}]
   (datomic/with-datomic-mode mode
@@ -38,4 +52,25 @@
     ;; events
     (datomic/transact! conn event.schema/schema)
 
-    ))
+    (add-event! conn [:chapter/slug "clojurebridge-hermanus"]
+                [:person/email "test@cb.org"]
+                #:event{:title      "ClojureBridge April"
+                        :start-date #inst "2018-04-12"
+                        :end-date   #inst "2018-04-14"})
+
+    (datomic/transact! conn [[:db/add [:event/slug "clojurebridge-april"]
+                       :event/status :status/complete]])
+
+    (add-event! conn [:chapter/slug "clojurebridge-hermanus"]
+                [:person/email "test@cb.org"]
+                #:event{:title      "ClojureBridge June"
+                        :start-date #inst "2018-04-14"
+                        :end-date   #inst "2018-04-16"})))
+
+(comment
+  (repl/set-datomic-mode! :peer)
+
+  (ig/init-key :datomic/dev-data
+               {:datomic #:datomic{:mode :peer
+                                   :conn (repl/conn)}})
+  )

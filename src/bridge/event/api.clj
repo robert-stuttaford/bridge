@@ -41,6 +41,7 @@
   (let [event-id (:field/entity-id field-update)]
     (or (event.data/check-event-organiser db event-id active-person-id)
         (let [event-id (datomic/entid db event-id) ;; protect against slug changes
+              ;; TODO error handling
               {db :db-after} (data.edit/update-field-value! conn db
                                                             event.data.edit/edit-whitelist
                                                             field-update)]
