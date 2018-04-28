@@ -1,8 +1,8 @@
 (ns bridge.web.template
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
-            [ring.util.response :as response]
-            [rum.core :as rum]))
+            [hiccup.core :as hiccup]
+            [ring.util.response :as response]))
 
 (def *html-template-source
   (delay (slurp (io/resource (str "template.html")))))
@@ -16,7 +16,4 @@
       response/response))
 
 (defn hiccup-response [& content]
-  (-> content
-      ;; TODO switch to normal hiccup
-      rum/render-static-markup
-      template-response))
+  (template-response (hiccup/html content)))

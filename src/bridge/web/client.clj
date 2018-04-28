@@ -10,8 +10,8 @@
 (defn edn-script-tag [id data]
   [:script
    {:id   id
-    :type "application/edn"
-    :dangerouslySetInnerHTML {:__html (pr-str data)}}])
+    :type "application/edn"}
+   (pr-str data)])
 
 (defn client [{:datomic/keys [db]
                {:keys [identity]} :session}]
