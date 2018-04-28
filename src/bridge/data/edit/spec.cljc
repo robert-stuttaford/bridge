@@ -13,7 +13,7 @@
 
 (s/def :field/retract? boolean?)
 
-(s/def :bridge/edit-field-operation
+(s/def :bridge/field-update
   (s/keys :req [:field/entity-id :field/attr :field/value]
           :opt [:field/retract?]))
 

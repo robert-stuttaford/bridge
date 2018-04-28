@@ -19,7 +19,7 @@
 
 (s/fdef check-custom-validation*
         :args (s/cat :db :bridge.datomic/db
-                     :edit-field :bridge/edit-field-operation)
+                     :edit-field :bridge/field-update)
         :ret (s/or :valid nil?
                    :invalid :bridge/error-result))
 
@@ -61,7 +61,7 @@
 (s/fdef check-field-update
         :args (s/cat :db :bridge.datomic/db
                      :whitelist (s/coll-of keyword? :kind set?)
-                     :edit-field :bridge/edit-field-operation)
+                     :edit-field :bridge/field-update)
         :ret (s/or :valid nil?
                    :invalid :bridge/error-result))
 
@@ -75,7 +75,7 @@
 
 (s/fdef update-field-value-tx
         :args (s/cat :db :bridge.datomic/db
-                     :edit-field :bridge/edit-field-operation)
+                     :edit-field :bridge/field-update)
         :ret (s/tuple #{:db/add :db/retract}
                       :bridge.datomic/stored-id
                       keyword?

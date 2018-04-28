@@ -4,11 +4,21 @@
             [bridge.data.edit :as data.edit]
             [bridge.event.data :as event.data]
             [bridge.event.data.edit :as event.data.edit]
-            [bridge.web.api.base :as api.base]))
+            [bridge.web.api.base :as api.base]
+            [clojure.spec.alpha :as s]))
 
-;; TODO spec all of these args, validate client-side and server-side
+(require 'bridge.data.datomic.spec
+         'bridge.data.edit.spec)
 
-;; TODO test
+(s/def :bridge.api/chapter-id :bridge.datomic/lookup-ref)
+(s/def :bridge.api/event-id :bridge.datomic/lookup-ref)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; List events for chapter
+
+(defmethod api.base/api-spec ::list-events-for-chapter [_]
+  (s/keys :req-un [:bridge.api/chapter-id]))
+
 (defmethod api.base/api ::list-events-for-chapter
   [{:datomic/keys [db]
     :keys [active-person-id chapter-id]}]
@@ -16,9 +26,13 @@
       (mapv #(event.data/event-for-listing db %)
             (event.data/event-ids-by-chapter db chapter-id))))
 
-;; TODO prevent unique conflicts on slug
-;; iterate all fields through update-field-value's validation to
-;; generate error results for the client to display
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Save new event
+
+(defmethod api.base/api-spec ::save-new-event! [_]
+  (s/keys :req-un [:bridge.api/chapter-id
+                   :bridge/new-event]))
+
 (defmethod api.base/api ::save-new-event!
   [{:datomic/keys [db conn]
     :keys [active-person-id chapter-id new-event]}]
@@ -26,8 +40,20 @@
       (let [{:event/keys [slug] :as event-tx}
             (event.data/new-event-tx chapter-id active-person-id new-event)
 
+            ;; If the slug is already in the database, append five random digits.
+            {:event/keys [slug] :as event-tx}
+            (cond-> event-tx
+              (some? (event.data/event-id-by-slug db slug))
+              (update :event/slug str "-" (rand-int 100000)))
+
             {db :db-after} (event.data/save-new-event! conn event-tx)]
         (event.data.edit/event-for-editing db [:event/slug slug]))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Event for editing
+
+(defmethod api.base/api-spec ::event-for-editing [_]
+  (s/keys :req-un [:bridge.api/event-id]))
 
 (defmethod api.base/api ::event-for-editing
   [{:datomic/keys [db]
@@ -35,15 +61,26 @@
   (or (event.data/check-event-organiser db event-id active-person-id)
       (event.data.edit/event-for-editing db event-id)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Update field value
+
+(defmethod api.base/api-spec ::update-field-value! [_]
+  (s/keys :req-un [:bridge.api/event-id
+                   :bridge/field-update]))
+
 (defmethod api.base/api ::update-field-value!
   [{:datomic/keys [db conn]
     :keys [active-person-id field-update]}]
   (let [event-id (:field/entity-id field-update)]
     (or (event.data/check-event-organiser db event-id active-person-id)
-        (let [event-id (datomic/entid db event-id) ;; protect against slug changes
-              ;; TODO error handling
-              {db :db-after} (data.edit/update-field-value! conn db
-                                                            event.data.edit/edit-whitelist
-                                                            field-update)]
-          (event.data.edit/event-for-editing db event-id)))))
+        (let [event-id (datomic/entid db event-id) ;; This protects against slug changes!
+              {error :error
+               db    :db-after
+               :as   result}
+              (data.edit/update-field-value! conn db
+                                             event.data.edit/edit-whitelist
+                                             field-update)]
+          (if (some? error)
+            result
+            (event.data.edit/event-for-editing db event-id))))))
 

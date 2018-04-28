@@ -9,6 +9,8 @@
 (defmethod api :default [params]
   (throw (ex-info "API action not supported" params)))
 
+(defmulti api-spec :action)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; API payloads
 
