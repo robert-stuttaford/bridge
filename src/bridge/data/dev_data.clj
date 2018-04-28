@@ -58,7 +58,7 @@
                         :end-date   #inst "2018-04-14"})
 
     (datomic/transact! conn [[:db/add [:event/slug "clojurebridge-april"]
-                       :event/status :status/complete]])
+                              :event/status :status/complete]])
 
     (add-event! conn [:chapter/slug "clojurebridge-hermanus"]
                 [:person/email "test@cb.org"]
