@@ -35,11 +35,13 @@
         [:div.column.is-two-fifths
          [ui.edit-field/edit-text-field
           (merge edit-field #:field{:title "Title"
-                                    :attr  :event/title})]
+                                    :attr  :event/title
+                                    :type  :text})]
 
          [ui.edit-field/edit-text-field
           (merge edit-field #:field{:title "Slug"
-                                    :attr  :event/slug})]
+                                    :attr  :event/slug
+                                    :type  :text})]
 
          [:div.field
           [:label.label "Dates"]

@@ -1,11 +1,11 @@
 (ns bridge.ui.component.edit-field
-  (:require [bridge.data.string :as data.string]
+  (:require bridge.data.edit.spec
+            [bridge.data.string :as data.string]
+            [bridge.ui.spec :as ui.spec]
             [bridge.ui.util :refer [<== ==> log]]
             [clojure.spec.alpha :as s]
             [clojure.string :as str]
             [reagent.core :as r]))
-
-;; TODO spec everything in :field/*
 
 (defn reset-edit-state! [type *edit value]
   (reset! *edit {:editing?   (not= type :markdown)
@@ -43,10 +43,10 @@
                        data.string/not-blank)
                    "(empty)")}}]))
 
-(defn edit-text-field [{:field/keys [type subscription entity-id attr title placeholder]
-                        :or         {type :text}
-                        :as         field}]
-  (let [*edit (r/atom {})]
+(defn edit-text-field [field]
+  (ui.spec/check-spec-error :bridge/edit-field-config field)
+  (let [{:field/keys [type subscription entity-id attr title placeholder]} field
+        *edit (r/atom {})]
     (reset-edit-state! type *edit (get-in (<== subscription) [entity-id attr]))
     (fn []
       (let [value (get-in (<== subscription) [entity-id attr])

@@ -25,11 +25,11 @@
           :opt [:bridge.ui/active-chapter
                 :bridge.event.ui/events]))
 
-(defn check-and-throw [a-spec db]
-  (when-not (s/valid? a-spec db)
-    (s/explain a-spec db)
-    (throw (ex-info (str "Invalid data for spec " (str a-spec))
-                    (s/explain-data a-spec db)))))
+(defn check-spec-error [spec value]
+  (when-not (s/valid? spec value)
+    (s/explain spec value)
+    (throw (ex-info (str "Invalid data for spec " (str spec))
+                    (s/explain-data spec value)))))
 
 (def check-spec-interceptor
-  (rf/after (partial check-and-throw :bridge.ui/db)))
+  (rf/after (partial check-spec-error :bridge.ui/db)))
