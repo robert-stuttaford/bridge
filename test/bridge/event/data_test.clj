@@ -71,3 +71,24 @@
             (event.data/event-id-by-slug new-db TEST-EVENT-SLUG)
             123)))))
 
+(deftest event-ids-by-chapter
+
+  (is (= [] (event.data/event-ids-by-chapter (db db-name) TEST-CHAPTER-ID)))
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (let [new-db (db db-name)]
+    (is (= [(event.data/event-id-by-slug new-db TEST-EVENT-SLUG)]
+           (event.data/event-ids-by-chapter new-db TEST-CHAPTER-ID)))))
+
+(deftest event-for-listing
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (let [new-db (db db-name)
+        event (->> (event.data/event-id-by-slug new-db TEST-EVENT-SLUG)
+                   (event.data/event-for-listing new-db))]
+    (is (some? (:event/slug event)))
+    (is (some? (get-in event [:event/chapter :chapter/slug])))
+    (is (some? (get-in event [:event/organisers 0 :person/name])))))
+

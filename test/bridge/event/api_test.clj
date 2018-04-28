@@ -33,6 +33,19 @@
    :datomic/conn     (conn db-name)
    :active-person-id TEST-PERSON-ID})
 
+(deftest list-events-for-chapter
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (let [[result] (api.base/api (merge (TEST-PAYLOAD)
+                                      {:action   ::event.api/list-events-for-chapter
+                                       :chapter-id TEST-CHAPTER-ID}))]
+
+    (is (= (get-in result [:event/chapter :chapter/slug])
+           "clojurebridge-hermanus"))
+    (is (= (->  result :event/organisers first :person/name)
+           "Test Name"))))
+
 (deftest event-for-editing
 
   (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))

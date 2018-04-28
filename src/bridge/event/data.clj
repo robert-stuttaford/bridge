@@ -16,7 +16,6 @@
                             [?event :event/organisers ?person]]
                           db event-id person-id))))
 
-;; TODO test
 (defn event-ids-by-chapter [db chapter-id]
   (mapv first (datomic/q '[:find ?event :in $ ?chapter :where
                            [?event :event/chapter ?chapter]]
@@ -32,7 +31,6 @@
    :event/end-date
    :event/registration-close-date])
 
-;; TODO test
 (defn event-for-listing [db event-id]
   (datomic/pull db event-for-listing-pull-spec event-id))
 
