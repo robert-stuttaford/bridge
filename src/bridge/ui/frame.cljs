@@ -6,17 +6,18 @@
 (defmethod ui.base/view :home [_]
   [:div "home"])
 
+;; TODO mobile layout
 (defn navbar []
   [:nav.navbar.is-fixed-top.is-info
    [:div.container
     [:div.navbar-brand
-     [:a.navbar-item (ui.routes/turbo-links "/app")
+     [:a.navbar-item (ui.routes/turbolink :home)
       [:img {:src (str "http://www.clojurebridge.org/assets/"
                        "cb-logo-cbba8a3667c88b78189d8826867cf01a.png")}]]]
     [:div.navbar-menu
      [:div.navbar-start
-      [:a.navbar-item (ui.routes/turbo-links "/app/events") "All Events"]
-      [:a.navbar-item (ui.routes/turbo-links "/app/events/create") "Create Event"]]
+      [:a.navbar-item (ui.routes/turbolink :list-events) "All Events"]
+      [:a.navbar-item (ui.routes/turbolink :create-event) "Create Event"]]
      [:div.navbar-end
       [:div.navbar-item (:person/name (<== [:bridge.ui/active-person]))]
       [:a.navbar-item {:href "/logout"} "Sign Out"]]]]])

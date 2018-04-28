@@ -25,7 +25,7 @@
           [:h1.title "No events yet"]
           [:br]
           [:h2.subtitle "Go ahead and "
-           [:a (ui.routes/turbo-links "/app/events/create") "create your first event"]
+           [:a (ui.routes/turbolink :create-event) "create your first event"]
            " now!"]]]]
 
        [:div.columns.is-multiline
@@ -43,5 +43,5 @@
               "Registration ends "
               [:strong [data.date/date-time registration-close-date]]]]
             [:footer.card-footer
-             [:a.card-footer-item (ui.routes/turbo-links (str "/app/events/edit/" slug))
+             [:a.card-footer-item (ui.routes/turbolink :edit-event {:event-slug slug})
               "Edit"]]]])]))])

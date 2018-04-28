@@ -16,22 +16,23 @@
   (==> [:bridge.ui/set-view {:view   handler
                              :params route-params}]))
 
-(def history (pushy/pushy dispatch-route url->route))
-
-(rf/reg-fx :set-history-token
-  (fn [view]
-    (pushy/set-token! history (route->url view))))
+(def history
+  (pushy/pushy dispatch-route url->route))
 
 (defn start-routing! [routes]
   (reset! *routes routes)
   (pushy/start! history))
 
-(defn dispatch-fn-for-route [url]
-  (let [route (url->route url)]
-    #(fn [e]
-       (.preventDefault e)
-       (dispatch-route route))))
+(rf/reg-fx :set-history-token
+  (fn [view]
+    (pushy/set-token! history (route->url view))))
 
-(defn turbo-links [url]
-  {:href     url
-   :on-click (dispatch-fn-for-route url)})
+(defn turbolink
+  ([route] (turbolink route {}))
+  ([route route-params]
+   (let [route {:route        route
+                :route-params route-params}]
+     {:href     (route->url route)
+      :on-click #(fn [e]
+                   (.preventDefault e)
+                   (dispatch-route route))})))

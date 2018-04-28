@@ -47,4 +47,4 @@
             (assoc :disabled "disabled"))
           "Create this event"]]
         [:div.control
-         [:a.button.is-text (ui.routes/turbo-links "/app/events") "Cancel"]]]])))
+         [:a.button.is-text (ui.routes/turbolink :list-events) "Cancel"]]]])))
