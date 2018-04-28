@@ -38,7 +38,7 @@
   (datomic/with-datomic-mode mode
     ;; people
     (datomic/transact! conn person.schema/schema)
-    (add-person! conn #:person{:name     "Test Name"
+    (add-person! conn #:person{:name     "Robert"
                                :email    "test@cb.org"
                                :password "secret"})
 
@@ -71,6 +71,10 @@
   (require '[bridge.dev.repl :as repl])
 
   (repl/set-datomic-mode! :peer)
+
+  ;; be sure to `cider-reset` after this!
+  (datomic.api/delete-database (get-in (bridge.config/system)
+                                       [:datomic/connection :uri]))
 
   (ig/init-key :datomic/dev-data
                {:datomic #:datomic{:mode :peer
