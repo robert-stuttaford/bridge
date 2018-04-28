@@ -32,9 +32,9 @@
 (defn turbolink
   ([route] (turbolink route {}))
   ([route route-params]
-   (let [route {:route        route
-                :route-params route-params}]
-     {:href     (route->url route)
-      :on-click #(fn [e]
-                   (.preventDefault e)
-                   (dispatch-route route))})))
+   {:href     (route->url {:view   route
+                           :params route-params})
+    :on-click #(fn [e]
+                 (.preventDefault e)
+                 (dispatch-route {:handler      route
+                                  :route-params route-params}))}))
