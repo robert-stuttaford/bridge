@@ -7,19 +7,6 @@
             [reagent.core :as r]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Testing UI
-
-(defn test-status-buttons [*test-status current-status]
-  [:div.buttons
-   (for [s (conj event.spec/status-order
-                 :status/cancelled)]
-     [:button.button.is-small {:on-click #(reset! *test-status s)
-                               :class    (if (= s current-status)
-                                           "is-primary"
-                                           "is-warning")}
-      (data.string/keyword->label s)])])
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Alter status
 
 (defn set-new-status! [slug status]
