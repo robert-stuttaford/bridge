@@ -1,8 +1,10 @@
 (ns bridge.event.data.edit-test
-  (:require [bridge.data.slug :as slug]
+  (:require [bridge.data.datomic :as datomic]
+            [bridge.data.edit :as data.edit]
+            [bridge.data.slug :as slug]
             [bridge.event.data :as event.data]
-            [bridge.event.schema :as event.schema]
             [bridge.event.data.edit :as event.data.edit]
+            [bridge.event.schema :as event.schema]
             [bridge.test.fixtures :as fixtures :refer [TEST-CHAPTER-ID TEST-PERSON-ID]]
             [bridge.test.util :refer [conn db test-setup with-database]]
             [clojure.test :refer [deftest is join-fixtures use-fixtures]]))
@@ -39,4 +41,35 @@
            "Test Name"))
     ))
 
-;; TODO test custom validations - status, organisers
+(deftest check-custom-validation:event-status
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (is (= :bridge.event.error/invalid-next-status
+         (:error (data.edit/check-custom-validation
+                  (db db-name)
+                  #:field{:entity-id [:event/slug TEST-EVENT-SLUG]
+                          :attr      :event/status
+                          :value     :event/complete}))))
+
+  (datomic/transact! (conn db-name) [[:db/add [:event/slug TEST-EVENT-SLUG]
+                                      :event/status :status/complete]])
+
+  (is (= :bridge.event.error/status-may-not-change
+         (:error (data.edit/check-custom-validation
+                  (db db-name)
+                  #:field{:entity-id [:event/slug TEST-EVENT-SLUG]
+                          :attr      :event/status
+                          :value     :event/complete})))))
+
+(deftest check-custom-validation:event-organisers
+
+  (event.data/save-new-event! (conn db-name) (TEST-NEW-EVENT-TX))
+
+  (is (= :bridge.event.error/event-can-not-have-no-organisers
+         (:error (data.edit/check-custom-validation
+                  (db db-name)
+                  #:field{:entity-id [:event/slug TEST-EVENT-SLUG]
+                          :attr      :event/organisers
+                          :value     1
+                          :retract?  true})))))
