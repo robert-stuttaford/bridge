@@ -11,40 +11,45 @@
 (def day-picker
   (r/adapt-react-class js/ReactDates.SingleDatePicker))
 
-(defn select-date [*form date-key initial-date]
+(defn select-date [date-fn on-change]
   (let [*focused (r/atom nil)]
     (fn []
-      (let [date (some-> (or (get @*form date-key) initial-date)
-                         date->moment)]
+      (let [date (some-> (date-fn) date->moment)]
         [day-picker
          (cond-> {:id              "day-picker"
                   :focused         (boolean @*focused)
                   :on-focus-change #(reset! *focused (get (js->clj %) "focused"))
-                  :on-date-change  #(swap! *form assoc date-key (moment->date %))}
+                  :on-date-change  #(on-change (moment->date %))}
            date (assoc :date date))]))))
 
 (def date-range-picker
   (r/adapt-react-class js/ReactDates.DateRangePicker))
 
-(defn select-dates [*form start-date-key initial-start-date
-                    end-date-key initial-end-date]
+(defn select-dates [start-date-fn end-date-fn on-change]
   (let [*focused (r/atom {})]
     (fn []
       (let [focused    @*focused
-            start-date (some-> (or (get @*form start-date-key) initial-start-date)
-                               date->moment)
-            end-date   (some-> (or (get @*form end-date-key) initial-end-date)
-                               date->moment)]
+            start-date (some-> (start-date-fn) date->moment)
+            end-date   (some-> (end-date-fn) date->moment)]
         [date-range-picker
          (cond-> {:on-focus-change #(reset! *focused (js->clj %))
                   :on-dates-change
-                  #(swap! *form
-                          (fn [state]
-                            (let [{:strs [startDate endDate]} (js->clj %)]
-                              (merge state
-                                     {start-date-key (some-> startDate moment->date)
-                                      end-date-key   (some-> endDate moment->date)}))))}
+                  #(let [{:strs [startDate endDate]} (js->clj %)]
+                     (on-change {:start (some-> startDate moment->date)
+                                 :end   (some-> endDate moment->date)}))}
            start-date (assoc :start-date start-date)
            end-date   (assoc :end-date end-date)
            (contains? #{"startDate" "endDate"} focused)
            (assoc :focused-input focused))]))))
+
+(defn select-dates-for-form [*form start-date-key initial-start-date
+                             end-date-key initial-end-date]
+  [select-dates
+   (constantly (or (get @*form start-date-key) initial-start-date))
+   (constantly (or (get @*form end-date-key) initial-end-date))
+   #(swap! *form
+           (fn [state]
+             (let [{:keys [start end]} %]
+               (merge state
+                      {start-date-key start
+                       end-date-key   end}))))])

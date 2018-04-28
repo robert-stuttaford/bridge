@@ -3,19 +3,18 @@
             [bridge.event.ui.edit.status :as ui.event.edit.status]
             [bridge.ui.component.date :as ui.date]
             [bridge.ui.component.edit-field :as ui.edit-field]
-            [bridge.ui.util :refer [<== ==> log]]
-            [reagent.core :as r]))
+            [bridge.ui.util :refer [<== ==> log]]))
 
 (def edit-field
   #:field{:subscription  [:bridge.event.ui/events]
           :commit-action :bridge.event.ui/update-field-value!})
 
 (defn edit-event [event-slug]
-  (if-some [{:event/keys [slug title status start-date end-date
-                          registration-close-date organisers]}
+  (if-some [{:event/keys [slug title status organisers]}
             (get (<== [:bridge.event.ui/events]) [:event/slug event-slug])]
 
-    (let [edit-field (assoc edit-field :field/entity-id [:event/slug slug])]
+    (let [entity-id [:event/slug slug]
+          edit-field (assoc edit-field :field/entity-id entity-id)]
 
       [:div
 
@@ -42,20 +41,33 @@
           (merge edit-field #:field{:title "Slug"
                                     :attr  :event/slug})]
 
-         ;; TODO connect to `:bridge.event.ui/update-field-value!`
          [:div.field
           [:label.label "Dates"]
           [:div.control
-           [ui.date/select-dates (r/atom {})
-            :event/start-date start-date
-            :event/end-date end-date]]]
+           ;; TODO clamp registration-closes to <= start-date
+           [ui.date/select-dates
+            #(get-in (<== [:bridge.event.ui/events]) [entity-id :event/start-date])
+            #(get-in (<== [:bridge.event.ui/events]) [entity-id :event/end-date])
+            #(do (==> [:bridge.event.ui/update-field-value!
+                       #:field{:entity-id entity-id
+                               :attr  :event/start-date
+                               :value (:start %)}])
+                 (==> [:bridge.event.ui/update-field-value!
+                       #:field{:entity-id entity-id
+                               :attr  :event/end-date
+                               :value (:end %)}]))]]]
 
-         ;; TODO connect to `:bridge.event.ui/update-field-value!`
          [:div.field
           [:label.label "Registration Closes"]
           [:div.control
-           [ui.date/select-date (r/atom {})
-            :event/registration-close-date registration-close-date]]]
+           ;; TODO prevent later than start-date
+           [ui.date/select-date
+            #(get-in (<== [:bridge.event.ui/events])
+                     [entity-id :event/registration-close-date])
+            #(==> [:bridge.event.ui/update-field-value!
+                   #:field{:entity-id entity-id
+                           :attr  :event/registration-close-date
+                           :value %}])]]]
 
          [:div.field
           [:label.label "Organisers"]

@@ -27,7 +27,7 @@
        [:div.field
         [:label.label "Event Date(s)"]
         [:div.control
-         [ui.date/select-dates *form
+         [ui.date/select-dates-for-form *form
           :event/start-date nil
           :event/end-date nil]]]
 

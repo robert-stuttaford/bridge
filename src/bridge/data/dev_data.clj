@@ -63,8 +63,8 @@
     (add-event! conn [:chapter/slug "clojurebridge-hermanus"]
                 [:person/email "test@cb.org"]
                 #:event{:title      "ClojureBridge June"
-                        :start-date #inst "2018-04-14"
-                        :end-date   #inst "2018-04-16"})))
+                        :start-date #inst "2018-06-14"
+                        :end-date   #inst "2018-06-16"})))
 
 (comment
 
