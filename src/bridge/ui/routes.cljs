@@ -4,13 +4,15 @@
             [pushy.core :as pushy]
             [re-frame.core :as rf]))
 
-(def *routes (atom []))
+(def *routes (atom nil))
 
 (defn url->route [url]
-  (bidi/match-route @*routes url))
+  (or (bidi/match-route @*routes url)
+      (throw (ex-info (str "No route found for url") {:url url}))))
 
-(defn route->url [{:keys [view params]}]
-  (apply bidi/path-for @*routes view (mapcat identity params)))
+(defn route->url [{:keys [view params] :as route}]
+  (or (apply bidi/path-for @*routes view (mapcat identity params))
+      (throw (ex-info (str "Route not defined") route))))
 
 (defn dispatch-route [{:keys [handler route-params]}]
   (==> [:bridge.ui/set-view {:view   handler

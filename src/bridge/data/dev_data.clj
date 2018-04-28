@@ -3,7 +3,6 @@
             [bridge.chapter.schema :as chapter.schema]
             [bridge.data.datomic :as datomic]
             [bridge.data.slug :as data.slug]
-            [bridge.dev.repl :as repl]
             [bridge.event.api :as event.api]
             [bridge.event.data :as event.data]
             [bridge.event.schema :as event.schema]
@@ -68,6 +67,9 @@
                         :end-date   #inst "2018-04-16"})))
 
 (comment
+
+  (require '[bridge.dev.repl :as repl])
+
   (repl/set-datomic-mode! :peer)
 
   (ig/init-key :datomic/dev-data
