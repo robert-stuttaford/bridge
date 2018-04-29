@@ -6,9 +6,6 @@
             [clojure.spec.alpha :as s]
             [reagent.core :as r]))
 
-;; TODO display errors
-;; TODO clear form on save, but only if there are no errors to display
-
 (defn create-event [_]
   (let [*form (r/atom {})]
     (fn []
@@ -40,9 +37,11 @@
         [:div.control
          [:button.button.is-link
           (cond-> {:href     "javascript:"
-                   :on-click #(==> [:bridge.event.ui/save-new-event!
-                                    (<== [:bridge.ui/active-chapter])
-                                    @*form])}
+                   :on-click #(do
+                                (==> [:bridge.event.ui/save-new-event!
+                                      (<== [:bridge.ui/active-chapter])
+                                      @*form])
+                                (reset! *form {}))}
             (not (s/valid? :bridge/new-event @*form))
             (assoc :disabled "disabled"))
           "Create this event"]]
