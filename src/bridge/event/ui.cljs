@@ -97,14 +97,16 @@
                                {:field-update field-update}
                                [::update-field-value-complete field-update])}))
 
-(rf/reg-event-db ::update-field-value-complete
+(rf/reg-event-fx ::update-field-value-complete
   [ui.spec/check-spec-interceptor]
-  (fn [db [_ field-update event]]
-    (set-event db event)
-    ;; TODO if (:field-update/attr field-update) is :event/slug :
-    ;; - dissoc old slug key?
-    ;; - go to edit url for new slug
-    ))
+  (fn [{:keys [db]} [_ {:field/keys [entity-id attr value]
+                       :keys [error]} event]]
+    (if (some? error)
+      {:db (update db ::events assoc entity-id :error error)}
+      (cond-> {:db (set-event db event)}
+        (= attr :event/slug)
+        (assoc :set-history-token {:view   :edit-event
+                                   :params {:event-slug value}})))))
 
 (defmethod ui.base/load-on-view :edit-event [{{:keys [event-slug]} :params}]
   [::event-for-editing [:event/slug event-slug]])
