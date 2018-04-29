@@ -45,11 +45,11 @@
 
 (defn edit-text-field [field]
   (ui.spec/check-spec-error :bridge/edit-field-config field)
-  (let [{:field/keys [type subscription entity-id attr title placeholder]} field
+  (let [{:field/keys [type subscription attr title placeholder]} field
         *edit (r/atom {})]
-    (reset-edit-state! type *edit (get-in (<== subscription) [entity-id attr]))
+    (reset-edit-state! type *edit (get (<== subscription) attr))
     (fn []
-      (let [value (get-in (<== subscription) [entity-id attr])
+      (let [value (get (<== subscription) attr)
             {:keys [editing? edit-value dirty? invalid?]} @*edit]
         [:div.field
          [:label.label [:u title] (when-not editing? " (click to edit)")]

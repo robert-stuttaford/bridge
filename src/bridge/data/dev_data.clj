@@ -11,6 +11,22 @@
             [bridge.web.api.base :as api.base]
             [integrant.core :as ig]))
 
+(comment
+
+  (do
+   (require '[bridge.dev.repl :as repl])
+
+   (repl/set-datomic-mode! :peer)
+
+   ;; be sure to `cider-reset` after this!
+   (datomic.api/delete-database (get-in (bridge.config/system)
+                                        [:datomic/connection :uri])))
+
+  (ig/init-key :datomic/dev-data
+               {:datomic #:datomic{:mode :peer
+                                   :conn (repl/conn)}})
+  )
+
 (defn add-chapter! [conn organiser-id {:chapter/keys [title] :as new-chapter}]
   (when (nil? (chapter.data/chapter-id-by-slug (datomic/db conn)
                                                (data.slug/->slug title)))
@@ -65,18 +81,3 @@
                 #:event{:title      "ClojureBridge June"
                         :start-date #inst "2018-06-14"
                         :end-date   #inst "2018-06-16"})))
-
-(comment
-
-  (require '[bridge.dev.repl :as repl])
-
-  (repl/set-datomic-mode! :peer)
-
-  ;; be sure to `cider-reset` after this!
-  (datomic.api/delete-database (get-in (bridge.config/system)
-                                       [:datomic/connection :uri]))
-
-  (ig/init-key :datomic/dev-data
-               {:datomic #:datomic{:mode :peer
-                                   :conn (repl/conn)}})
-  )

@@ -1,7 +1,12 @@
 (ns bridge.event.schema)
 
 (def schema
-  [{:db/ident       :event/title
+  [{:db/ident       :event/id
+    :db/cardinality :db.cardinality/one
+    :db/valueType   :db.type/uuid
+    :db/unique      :db.unique/value}
+
+   {:db/ident       :event/title
     :db/cardinality :db.cardinality/one
     :db/valueType   :db.type/string}
 

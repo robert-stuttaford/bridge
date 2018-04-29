@@ -4,6 +4,8 @@
             bridge.data.datomic.spec
             [clojure.spec.alpha :as s]))
 
+(s/def :event/id uuid?)
+
 (s/def :event/status #{:status/draft :status/registering :status/inviting
                        :status/in-progress :status/cancelled :status/complete})
 (s/def :event/title :bridge.spec/required-string)
@@ -34,8 +36,8 @@
 
 (s/def :bridge/event
   (s/merge :bridge/new-event
-           (s/keys :req [:event/status :event/slug :event/registration-close-date
-                         :event/chapter :event/organisers]
+           (s/keys :req [:event/id :event/status :event/slug :event/chapter
+                         :event/registration-close-date :event/organisers]
                    :opt [:event/details-markdown :event/notes-markdown])))
 
 (s/def :bridge/new-event-tx :bridge/event)

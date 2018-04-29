@@ -1,7 +1,8 @@
 (ns bridge.event.data
   (:require [bridge.data.datomic :as datomic]
             [bridge.data.slug :as slug]
-            [clojure.spec.alpha :as s]))
+            [clojure.spec.alpha :as s])
+  (:import java.util.UUID))
 
 (require 'bridge.event.spec)
 
@@ -22,7 +23,8 @@
                          db chapter-id)))
 
 (def event-for-listing-pull-spec
-  [:event/title
+  [:event/id
+   :event/title
    :event/slug
    :event/status
    {:event/chapter [:chapter/slug]}
@@ -48,7 +50,8 @@
                     {:event/keys [title registration-close-date start-date]
                      :as event}]
   (-> (s/assert :bridge/new-event event)
-      (merge {:event/slug       (slug/->slug title)
+      (merge {:event/id         (UUID/randomUUID)
+              :event/slug       (slug/->slug title)
               :event/status     :status/draft
               :event/chapter    chapter-id
               :event/organisers [{:db/id organiser-id}]})

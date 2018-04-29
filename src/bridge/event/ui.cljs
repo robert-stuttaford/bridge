@@ -18,19 +18,22 @@
 
 (rf/reg-sub ::events (fn [db _] (::events db)))
 
-(defn set-event [db {:event/keys [slug] :as event}]
-  (update db ::events assoc [:event/slug slug] event))
+(defn set-event [db {:event/keys [id] :as event}]
+  (update db ::events assoc [:event/id id] event))
 
 (defn set-events [db events]
   (update db ::events merge
           (into {}
-                (map (juxt (fn [{:event/keys [slug]}]
-                             [:event/slug slug])
+                (map (juxt (fn [{:event/keys [id]}]
+                             [:event/id id])
                            identity))
                 events)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; create-event
+
+(defmethod ui.base/view :create-event [_]
+  [bridge.event.ui.create/create-event])
 
 (rf/reg-event-fx ::save-new-event!
   [ui.spec/check-spec-interceptor]
@@ -48,11 +51,14 @@
      :set-history-token {:view   :edit-event
                          :params {:event-slug slug}}}))
 
-(defmethod ui.base/view :create-event [_]
-  [bridge.event.ui.create/create-event])
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; list-events
+
+(defmethod ui.base/load-on-view :list-events [_]
+  [::list-events-for-chapter (<== [:bridge.ui/active-chapter])])
+
+(defmethod ui.base/view :list-events [_]
+  [bridge.event.ui.list/list-events])
 
 (rf/reg-event-fx ::list-events-for-chapter
   [ui.spec/check-spec-interceptor]
@@ -67,14 +73,14 @@
   (fn [db [_ events]]
     (set-events db events)))
 
-(defmethod ui.base/load-on-view :list-events [_]
-  [::list-events-for-chapter (<== [:bridge.ui/active-chapter])])
-
-(defmethod ui.base/view :list-events [_]
-  [bridge.event.ui.list/list-events])
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; edit-event
+
+(defmethod ui.base/load-on-view :edit-event [{{:keys [event-slug]} :params}]
+  [::event-for-editing [:event/slug event-slug]])
+
+(defmethod ui.base/view :edit-event [{{:keys [event-slug]} :params}]
+  [bridge.event.ui.edit/edit-event event-slug])
 
 (rf/reg-event-fx ::event-for-editing
   [ui.spec/check-spec-interceptor]
@@ -83,6 +89,15 @@
      (ui.ajax/action :bridge.event.api/event-for-editing
                      {:event-id event-id}
                      [::event-for-editing-complete])}))
+
+(rf/reg-sub ::event-for-editing
+  (fn [_]
+    [(rf/subscribe [:bridge.ui/current-view])
+     (rf/subscribe [::events])])
+  (fn [[{{:keys [event-slug]} :params} events]]
+    (first (sequence (filter (fn [{:event/keys [slug]}]
+                               (= event-slug slug)))
+                     (vals events)))))
 
 (rf/reg-event-db ::event-for-editing-complete
   [ui.spec/check-spec-interceptor]
@@ -102,14 +117,8 @@
   (fn [{:keys [db]} [_ {:field/keys [entity-id attr value]
                        :keys [error]} event]]
     (if (some? error)
-      {:db (update db ::events assoc entity-id :error error)}
+      {:db (update-in db [::events entity-id :errors] assoc attr error)}
       (cond-> {:db (set-event db event)}
         (= attr :event/slug)
         (assoc :set-history-token {:view   :edit-event
                                    :params {:event-slug value}})))))
-
-(defmethod ui.base/load-on-view :edit-event [{{:keys [event-slug]} :params}]
-  [::event-for-editing [:event/slug event-slug]])
-
-(defmethod ui.base/view :edit-event [{{:keys [event-slug]} :params}]
-  [bridge.event.ui.edit/edit-event event-slug])

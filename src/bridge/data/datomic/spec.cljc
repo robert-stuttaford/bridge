@@ -18,7 +18,8 @@
         :instant inst?
         :string string?
         :boolean boolean?
-        :keyword keyword?))
+        :keyword keyword?
+        :uuid uuid?))
 
 (s/def :bridge.datomic/value
   (s/or :scalar :bridge.datomic/scalar-value

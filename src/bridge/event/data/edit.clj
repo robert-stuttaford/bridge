@@ -7,7 +7,8 @@
 ;;; Edit
 
 (def event-for-editing-pull-spec
-  [:event/title
+  [:event/id
+   :event/title
    :event/slug
    :event/status
    {:event/chapter [:chapter/slug]}
