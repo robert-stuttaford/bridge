@@ -14,8 +14,8 @@
 (s/def :field/retract? boolean?)
 
 (s/def :bridge/field-update
-  (s/keys :req [:field/entity-id :field/attr :field/value]
-          :opt [:field/retract?]))
+  (s/keys :req [:field/attr :field/value]
+          :opt [:field/entity-id :field/retract?]))
 
 (s/def :field/type #{:text :email :markdown})
 (s/def :field/edit-state-key keyword?)
