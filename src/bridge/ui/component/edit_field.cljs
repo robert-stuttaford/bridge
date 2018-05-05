@@ -3,29 +3,52 @@
             [bridge.data.string :as data.string]
             [bridge.ui.spec :as ui.spec]
             [bridge.ui.util :refer [<== ==> log]]
-            [clojure.spec.alpha :as s]
             [clojure.string :as str]
-            [reagent.core :as r]))
+            [clojure.spec.alpha :as s]
+            [re-frame.core :as rf]))
 
-(defn reset-edit-state! [type *edit value]
-  (reset! *edit {:editing?   (not= type :markdown)
-                 :edit-value value}))
+(defn init-edit-state [edit-by-default? value]
+  {:orig-value value
+   :edit-value value
+   :editing?   edit-by-default?})
 
-(defn update-edit-state! [*edit attr orig-value edit-value]
-  (swap! *edit (fn [edit]
-                 (merge (select-keys edit [:editing?])
+(defn prepare-edit-attrs [attrs attr->field-config]
+  (reduce (fn [attrs [attr {:field/keys [edit-by-default?]}]]
+            (assoc attrs attr (init-edit-state edit-by-default? (get attrs attr))))
+          attrs
+          attr->field-config))
+
+(defn reset-edit-state [db [_ {:field/keys [edit-state-key attr edit-by-default?]}]]
+  (update-in db [edit-state-key attr]
+             #(init-edit-state edit-by-default? (:orig-value %))))
+
+(rf/reg-event-db ::reset-edit-state [ui.spec/check-spec-interceptor] reset-edit-state)
+
+(rf/reg-event-db ::start-editing
+  [ui.spec/check-spec-interceptor]
+  (fn [db [_ {:field/keys [edit-state-key attr]}]]
+    (assoc-in db [edit-state-key attr :editing?] true)))
+
+(rf/reg-event-db ::update-edit-state
+  [ui.spec/check-spec-interceptor]
+  (fn [db [_ {:field/keys [edit-state-key attr]} edit-value]]
+    (update-in db [edit-state-key attr]
+               (fn [{:keys [orig-value] :as edit-state}]
+                 (merge edit-state
                         {:edit-value edit-value
                          :dirty?     (not= orig-value edit-value)
                          :invalid?   (if-some [spec (s/get-spec attr)]
                                        (not (s/valid? spec edit-value))
-                                       false)}))))
+                                       false)})))))
 
-(defn commit-edit! [*edit {:field/keys [type commit-action] :as field} edit-value]
-  (reset-edit-state! type *edit edit-value)
-  (==> [commit-action
-        (-> field
-            (select-keys [:field/entity-id :field/attr])
-            (assoc :field/value edit-value))]))
+(rf/reg-event-fx ::commit-edit
+  [ui.spec/check-spec-interceptor]
+  (fn [{:keys [db]} [_ {:field/keys [edit-state-key attr commit-action] :as field}
+                    edit-value]]
+    {:db       (assoc-in db [edit-state-key attr :busy?] true)
+     :dispatch [commit-action field edit-value]}))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn markdown [content placeholder]
   (let [using-placeholder? (and (str/blank? content)
@@ -45,58 +68,71 @@
 
 (defn edit-text-field [field]
   (ui.spec/check-spec-error :bridge/edit-field-config field)
-  (let [{:field/keys [type subscription attr title placeholder]} field
-        *edit (r/atom {})]
-    (reset-edit-state! type *edit (get (<== subscription) attr))
-    (fn []
-      (let [value (get (<== subscription) attr)
-            {:keys [editing? edit-value dirty? invalid?]} @*edit]
-        [:div.field
-         [:label.label [:u title] (when-not editing? " (click to edit)")]
-         (if editing?
-           [:div.control
-            (when invalid? {:class "has-icons-right"})
-            [(case type
-               (:text :email) :input.input
-               :markdown      :textarea.textarea)
-             (cond-> {:placeholder (str (or placeholder title)
-                                        (when invalid? " is required!"))
-                      :value       edit-value
-                      :on-change   #(update-edit-state! *edit attr value
-                                                        (.. % -currentTarget -value))
-                      :on-key-up
-                      (fn [e]
-                        (.stopImmediatePropagation (aget e "nativeEvent"))
-                        (condp = (.-key e)
-                          "Enter"  (when (and (not invalid?)
+  (let [{:field/keys [type edit-state-key attr title placeholder]} field
+        {:keys [orig-value edit-value error editing? dirty? invalid? busy?]
+         :or   {status :ready}}
+        (get (<== [edit-state-key]) attr)
+        edit!   #(==> [::start-editing field])
+        update! #(==> [::update-edit-state field %])
+        commit! #(==> [::commit-edit field edit-value])
+        reset!  #(==> [::reset-edit-state field])]
+    [:div.field
+     [:label.label [:u title]
+      (when-not editing? " (click to edit)")
+      (when (some? error)
+        (case error
+          :bridge.error/uniqueness-conflict
+          [:span.has-text-danger {:style {:margin-left "1rem"}}
+           (str "That " (str/lower-case title) " is already in use.")]
+          [:code (name error)]))]
+     (if editing?
+       [:div.control
+        (when (or invalid? busy?) {:class "has-icons-right"})
+        [(case type
+           (:text :email) :input.input
+           :markdown      :textarea.textarea)
+         (cond-> {:placeholder (str (or placeholder title)
+                                    (when invalid? " is required!"))
+                  :value       edit-value
+                  :on-change   #(update! (.. % -currentTarget -value))
+                  :on-key-up   (fn [e]
+                                 (.stopImmediatePropagation (aget e "nativeEvent"))
+                                 (condp = (.-key e)
+                                   "Enter"
+                                   (when (and (not invalid?)
                                               (or (not= type :markdown)
                                                   (.-ctrlKey e)))
                                      (.preventDefault e)
-                                     (commit-edit! *edit field edit-value))
-                          "Escape" (reset-edit-state! type *edit value)
-                          nil))}
-               (not= type :markdown) (assoc :type (name type))
-               (= type :markdown)    (merge {:rows      10
-                                             :autoFocus "autofocus"})
-               dirty?                (assoc :class "is-warning")
-               invalid?              (assoc :class "is-danger"))]
-            (when invalid?
-              [:span.icon.is-small.is-right [:i.fas.fa-warning]])]
-           [:div {:on-click #(swap! *edit assoc :editing? true)}
-            (case type
-              (:text :email) value
-              :markdown      [markdown value placeholder])])
-         (when dirty?
-           [:div.buttons.is-pulled-right {:style {:margin-top "5px"}}
-            [:button.button.is-small.is-primary
-             (if invalid?
-               {:disabled "disabled"}
-               {:title    (case type
-                            (:text :email) "Press Enter"
-                            :markdown      "Press Ctrl+Enter")
-                :on-click #(commit-edit! *edit field edit-value)})
-             "Save"]
-            [:button.button.is-small.is-text
-             {:title    "Press Escape"
-              :on-click #(reset-edit-state! type *edit value)}
-             "Cancel"]])]))))
+                                     (commit!))
+
+                                   "Escape"
+                                   (reset!)
+                                   nil))}
+           (not= type :markdown) (assoc :type (name type))
+           (= type :markdown)    (merge {:rows      10
+                                         :autoFocus "autofocus"})
+           dirty?                (assoc :class "is-warning")
+           invalid?              (assoc :class "is-danger")
+           busy?                 (assoc :disabled "disabled"))]
+        (cond invalid?
+              [:span.icon.is-small.is-right [:i.fas.fa-exclamation-triangle]]
+              busy?
+              [:span.icon.is-small.is-right [:i.fas.fa-circle-notch.fa-spin]])]
+       [:div {:on-click #(edit!)}
+        (case type
+          (:text :email) orig-value
+          :markdown      [markdown orig-value placeholder])])
+     (when dirty?
+       [:div.buttons.is-pulled-right {:style {:margin-top "5px"}}
+        [:button.button.is-small.is-primary
+         (if invalid?
+           {:disabled "disabled"}
+           {:title    (case type
+                        (:text :email) "Press Enter"
+                        :markdown      "Press Ctrl+Enter")
+            :on-click #(commit!)})
+         "Save"]
+        [:button.button.is-small.is-text
+         {:title    "Press Escape"
+          :on-click #(reset!)}
+         "Cancel"]])]))

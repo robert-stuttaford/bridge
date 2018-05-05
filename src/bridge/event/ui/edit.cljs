@@ -5,95 +5,60 @@
             [bridge.ui.component.edit-field :as ui.edit-field]
             [bridge.ui.util :refer [<== ==> log]]))
 
-(def edit-field
-  #:field{:subscription  [:bridge.event.ui/event-for-editing]
-          :commit-action :bridge.event.ui/update-field-value!})
-
 (defn edit-event [event-slug]
-  (if-some [{:event/keys [id title status organisers]}
+  (if-some [{:event/keys [title status organisers]}
             (<== [:bridge.event.ui/event-for-editing])]
 
-    (let [entity-id  [:event/id id]
-          edit-field (assoc edit-field :field/entity-id entity-id)]
+    [:div
 
-      [:div
+     [:div.level
+      [:div.level-left
+       [:div.level-item
+        [:h3.title.is-4.spaced "Event details: " [:u (:orig-value title)]]]]
+      [:div.level-right
+       [ui.event.edit.status/edit-event-status]]]
 
-       [:div.level
-        [:div.level-left
-         [:div.level-item
-          [:h3.title.is-4.spaced "Event details: " [:u title]]]]
-        [:div.level-right
-         [ui.event.edit.status/edit-event-status edit-field]]]
+     [:div.is-divider]
 
-       [:div.is-divider]
+     [ui.event.edit.status/event-status-steps status]
 
-       [ui.event.edit.status/event-status-steps status]
+     [:div.is-divider]
 
-       [:div.is-divider]
+     [:div.columns
+      [:div.column.is-two-fifths
+       [ui.edit-field/edit-text-field (event.spec/attr->field :event/title)]
+       [ui.edit-field/edit-text-field (event.spec/attr->field :event/slug)]
 
-       [:div.columns
-        [:div.column.is-two-fifths
-         [ui.edit-field/edit-text-field
-          (merge edit-field #:field{:title "Title"
-                                    :attr  :event/title
-                                    :type  :text})]
+       [:div.field
+        [:label.label "Dates"]
+        [:div.control
+         ;; TODO clamp registration-closes to <= start-date
+         [ui.date/select-dates
+          #(get (<== [:bridge.event.ui/event-for-editing]) :event/start-date)
+          #(get (<== [:bridge.event.ui/event-for-editing]) :event/end-date)
+          #(do (==> [:bridge.event.ui/update-field-value! :event/start-date (:start %)])
+               (==> [:bridge.event.ui/update-field-value! :event/end-date (:end %)]))]]]
 
-         [ui.edit-field/edit-text-field
-          (merge edit-field #:field{:title "Slug"
-                                    :attr  :event/slug
-                                    :type  :text})]
+       [:div.field
+        [:label.label "Registration Closes"]
+        [:div.control
+         ;; TODO prevent later than start-date
+         [ui.date/select-date
+          #(get (<== [:bridge.event.ui/event-for-editing])
+                :event/registration-close-date)
+          #(==> [:bridge.event.ui/update-field-value!
+                 :event/registration-close-date %])]]]
 
-         [:div.field
-          [:label.label "Dates"]
-          [:div.control
-           ;; TODO clamp registration-closes to <= start-date
-           [ui.date/select-dates
-            #(get (<== [:bridge.event.ui/event-for-editing]) :event/start-date)
-            #(get (<== [:bridge.event.ui/event-for-editing]) :event/end-date)
-            #(do (==> [:bridge.event.ui/update-field-value!
-                       #:field{:entity-id entity-id
-                               :attr  :event/start-date
-                               :value (:start %)}])
-                 (==> [:bridge.event.ui/update-field-value!
-                       #:field{:entity-id entity-id
-                               :attr  :event/end-date
-                               :value (:end %)}]))]]]
+       [:div.field
+        [:label.label "Organisers"]
+        [:div.control.content
+         [:ul
+          (for [{:person/keys [name]} organisers]
+            [:li {:key name} name])]]]]
 
-         [:div.field
-          [:label.label "Registration Closes"]
-          [:div.control
-           ;; TODO prevent later than start-date
-           [ui.date/select-date
-            #(get (<== [:bridge.event.ui/event-for-editing])
-                  :event/registration-close-date)
-            #(==> [:bridge.event.ui/update-field-value!
-                   #:field{:entity-id entity-id
-                           :attr  :event/registration-close-date
-                           :value %}])]]]
+      [:div.is-divider-vertical]
 
-         [:div.field
-          [:label.label "Organisers"]
-          [:div.control.content
-           [:ul
-            (for [{:person/keys [name]} organisers]
-              [:li {:key name} name])]]]]
-
-        [:div.is-divider-vertical]
-
-        [:div.column
-         [ui.edit-field/edit-text-field
-          (merge edit-field
-                 #:field{:title       "Details"
-                         :attr        :event/details-markdown
-                         :type        :markdown
-                         :placeholder (event.spec/field->placeholder
-                                       :event/details-markdown)})]
-
-         [ui.edit-field/edit-text-field
-          (merge edit-field
-                 #:field{:title       "Notes"
-                         :attr        :event/notes-markdown
-                         :type        :markdown
-                         :placeholder (event.spec/field->placeholder
-                                       :event/notes-markdown)})]]]])
+      [:div.column
+       [ui.edit-field/edit-text-field (event.spec/attr->field :event/details-markdown)]
+       [ui.edit-field/edit-text-field (event.spec/attr->field :event/notes-markdown)]]]]
     [:p "No event."]))

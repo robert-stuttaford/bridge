@@ -73,14 +73,34 @@
    :status/inviting    [:status/in-progress :status/cancelled]
    :status/in-progress [:status/complete    :status/cancelled]})
 
-(def field->placeholder
-  {:event/details-markdown
-   "Tell folks about this event:
+(def details-markdown->placeholder
+  "Tell folks about this event:
 
-Include start time, information about the location(s), where to park, secret passphrase to use at the door, etc.
+  Include start time, information about the location(s), where to park, secret passphrase to use at the door, etc.
 
-Markdown syntax is supported."
-   :event/notes-markdown
-   "Private notes for organisers to share.
+  Markdown syntax is supported.")
 
-Markdown syntax is supported."})
+(def notes-markdown->placeholder
+  "Private notes for organisers to share.
+
+  Markdown syntax is supported.")
+
+(def attr->field-config
+  {:event/title            #:field{:title            "Title"
+                                   :type             :text
+                                   :edit-by-default? true}
+   :event/slug             #:field{:title            "Slug"
+                                   :type             :text
+                                   :edit-by-default? true}
+   :event/details-markdown #:field{:title       "Details"
+                                   :type        :markdown
+                                   :placeholder details-markdown->placeholder}
+   :event/notes-markdown   #:field{:title       "Notes"
+                                   :type        :markdown
+                                   :placeholder notes-markdown->placeholder}})
+
+(defn attr->field [attr]
+  (merge #:field{:edit-state-key :bridge.event.ui/event-for-editing
+                 :commit-action  :bridge.event.ui/update-field-value!
+                 :attr           attr}
+         (attr->field-config attr)))

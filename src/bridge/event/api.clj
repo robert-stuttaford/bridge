@@ -77,5 +77,5 @@
                                            event.data.edit/edit-whitelist
                                            field-update)]
         (if (some? error)
-          (assoc result :field/orig-value (datomic/attr db entity-id attr))
-          (event.data.edit/event-for-editing db-after entity-id)))))
+          result
+          {:value (datomic/attr db-after entity-id attr)}))))

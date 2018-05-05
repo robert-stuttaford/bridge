@@ -11,9 +11,8 @@
 
 (defn set-new-status! [slug status]
   (==> [:bridge.event.ui/update-field-value!
-        #:field{:entity-id [:event/slug slug]
-                :attr      :event/status
-                :value     status}]))
+        #:field{:attr  :event/status
+                :value status}]))
 
 (defn confirm-change-event-status-modal [*confirm-next-status slug]
   (when-some [next-status @*confirm-next-status]
@@ -33,10 +32,10 @@
         [:button.button.is-text {:on-click close-confirm-modal-fn}
          "No - cancel"]]])))
 
-(defn edit-event-status [{:field/keys [subscription entity-id]}]
+(defn edit-event-status []
   (let [*confirm-next-status (r/atom nil)]
     (fn []
-      (let [{:event/keys [slug status]} (get (<== subscription) entity-id)]
+      (let [{:event/keys [slug status]} (<== [:bridge.event.ui/event-for-editing])]
         (when-not (= :status/cancelled status)
           [:div.level-item [:strong "This event is cancelled."]]
           (when-some [[next-status cancel-status]

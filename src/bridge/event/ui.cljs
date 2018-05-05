@@ -1,9 +1,11 @@
 (ns bridge.event.ui
-  (:require bridge.event.ui.create
+  (:require [bridge.event.spec :as event.spec]
+            bridge.event.ui.create
             bridge.event.ui.edit
             bridge.event.ui.list
             [bridge.ui.ajax :as ui.ajax]
             [bridge.ui.base :as ui.base]
+            [bridge.ui.component.edit-field :as ui.edit-field]
             [bridge.ui.spec :as ui.spec]
             [bridge.ui.util :refer [<== ==> log]]
             [re-frame.core :as rf]))
@@ -82,6 +84,8 @@
 (defmethod ui.base/view :edit-event [{{:keys [event-slug]} :params}]
   [bridge.event.ui.edit/edit-event event-slug])
 
+(rf/reg-sub ::event-for-editing (fn [db _] (::event-for-editing db)))
+
 (rf/reg-event-fx ::event-for-editing
   [ui.spec/check-spec-interceptor]
   (fn [db [_ event-id]]
@@ -90,35 +94,34 @@
                      {:event-id event-id}
                      [::event-for-editing-complete])}))
 
-(rf/reg-sub ::event-for-editing
-  (fn [_]
-    [(rf/subscribe [:bridge.ui/current-view])
-     (rf/subscribe [::events])])
-  (fn [[{{:keys [event-slug]} :params} events]]
-    (first (sequence (filter (fn [{:event/keys [slug]}]
-                               (= event-slug slug)))
-                     (vals events)))))
-
 (rf/reg-event-db ::event-for-editing-complete
   [ui.spec/check-spec-interceptor]
   (fn [db [_ event]]
-    (set-event db event)))
+    (assoc db ::event-for-editing
+           (ui.edit-field/prepare-edit-attrs event event.spec/attr->field-config))))
 
 (rf/reg-event-fx ::update-field-value!
   [ui.spec/check-spec-interceptor]
-  (fn [{:keys [db]} [_ {:field/keys [entity-id attr value] :as field-update}]]
-    {:db       (update db ::events assoc-in [entity-id attr] value)
-     :dispatch (ui.ajax/action :bridge.event.api/update-field-value!
-                               {:field-update field-update}
-                               [::update-field-value-complete field-update])}))
+  (fn [{:keys [db]} [_ {:field/keys [attr] :as field} edit-value]]
+    {:dispatch
+     (ui.ajax/action :bridge.event.api/update-field-value!
+                     {:field-update
+                      (let [event-id (get-in db [::event-for-editing :event/id])]
+                        #:field{:entity-id [:event/id event-id]
+                                :attr      attr
+                                :value     edit-value})}
+                     [::update-field-value-complete field])}))
 
 (rf/reg-event-fx ::update-field-value-complete
   [ui.spec/check-spec-interceptor]
-  (fn [{:keys [db]} [_ {:field/keys [entity-id attr value]
-                       :keys [error]} event]]
+  (fn [{:keys [db]} [_ {:field/keys [attr edit-by-default?]} {:keys [error value]}]]
     (if (some? error)
-      {:db (update-in db [::events entity-id :errors] assoc attr error)}
-      (cond-> {:db (set-event db event)}
+      {:db (update-in db [::event-for-editing attr]
+                      #(-> %
+                           (dissoc :busy?)
+                           (assoc :error error)))}
+      (cond-> {:db (assoc-in db [::event-for-editing attr]
+                             (ui.edit-field/init-edit-state edit-by-default? value))}
         (= attr :event/slug)
         (assoc :set-history-token {:view   :edit-event
                                    :params {:event-slug value}})))))

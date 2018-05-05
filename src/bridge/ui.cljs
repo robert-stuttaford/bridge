@@ -34,5 +34,3 @@
     (let [load-on-view (ui.base/load-on-view view)]
       (cond-> {:db (assoc db ::current-view view)}
         (some? load-on-view) (assoc :dispatch load-on-view)))))
-
-(rf/reg-sub ::current-view (fn [db _] (::current-view db)))
