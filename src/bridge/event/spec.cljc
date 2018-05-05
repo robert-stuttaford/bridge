@@ -86,18 +86,22 @@
   Markdown syntax is supported.")
 
 (def attr->field-config
-  {:event/title            #:field{:title            "Title"
-                                   :type             :text
-                                   :edit-by-default? true}
-   :event/slug             #:field{:title            "Slug"
-                                   :type             :text
-                                   :edit-by-default? true}
-   :event/details-markdown #:field{:title       "Details"
-                                   :type        :markdown
-                                   :placeholder details-markdown->placeholder}
-   :event/notes-markdown   #:field{:title       "Notes"
-                                   :type        :markdown
-                                   :placeholder notes-markdown->placeholder}})
+  #:event{:title
+          #:field{:title "Title"
+                  :type :text
+                  :edit-by-default? true}
+          :slug
+          #:field{:title "Slug"
+                  :type :text
+                  :edit-by-default? true}
+          :details-markdown
+          #:field{:title       "Details"
+                  :type        :markdown
+                  :placeholder details-markdown->placeholder}
+          :notes-markdown
+          #:field{:title       "Notes"
+                  :type        :markdown
+                  :placeholder notes-markdown->placeholder}})
 
 (defn attr->field [attr]
   (merge #:field{:edit-state-key :bridge.event.ui/event-for-editing
