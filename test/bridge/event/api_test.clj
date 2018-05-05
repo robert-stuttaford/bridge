@@ -82,5 +82,5 @@
                                              :attr      :event/notes-markdown
                                              :value     "# notes"}}))]
 
-    (is (= (:event/notes-markdown result)
+    (is (= (:value result)
            "# notes"))))
