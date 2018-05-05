@@ -6,7 +6,7 @@
 
 (defn check-spec-error [payload]
   (let [spec (api.base/api-spec payload)]
-    (when-not (s/valid? spec payload)
+    (when (and (some? spec) (not (s/valid? spec payload)))
       {:status 400
        :body   (s/explain-str spec payload)})))
 

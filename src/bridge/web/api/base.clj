@@ -11,6 +11,8 @@
 
 (defmulti api-spec :action)
 
+(defmethod api-spec :default [_] nil)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; API payloads
 
