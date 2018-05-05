@@ -13,11 +13,18 @@
                             (on-click)
                             (toggle-menu-fn))))
 
+(defn maybe-add-toggle-menu-handler [toggle-menu-fn menu-active? params]
+  (cond-> params
+    menu-active?
+    (add-toggle-menu-handler toggle-menu-fn)))
+
 (defn navbar []
   (let [*menu-active?  (r/atom false)
         toggle-menu-fn #(swap! *menu-active? not)]
     (fn []
-      (let [menu-active? @*menu-active?]
+      (let [menu-active?                  @*menu-active?
+            maybe-add-toggle-menu-handler (partial maybe-add-toggle-menu-handler
+                                                   toggle-menu-fn menu-active?)]
         [:nav.navbar.is-fixed-top.is-info
          [:div.container
           [:div.navbar-brand
@@ -34,15 +41,15 @@
             [:span {:aria-hidden "true"}]]]
           [:div.navbar-menu (when menu-active? {:class "is-active"})
            [:div.navbar-start
-            [:a.navbar-item (cond-> (ui.routes/turbolink :list-events)
-                              menu-active?
-                              (add-toggle-menu-handler toggle-menu-fn)) "All Events"]
-            [:a.navbar-item (cond-> (ui.routes/turbolink :create-event)
-                              menu-active?
-                              (add-toggle-menu-handler toggle-menu-fn)) "Create Event"]]
+            [:a.navbar-item (-> (ui.routes/turbolink :list-events)
+                                maybe-add-toggle-menu-handler) "All Events"]
+            [:a.navbar-item (-> (ui.routes/turbolink :create-event)
+                                maybe-add-toggle-menu-handler) "Create Event"]]
            [:div.navbar-end
             [:div.navbar-divider]
-            [:div.navbar-item (:person/name (<== [:bridge.ui/active-person]))]
+            [:a.navbar-item (-> (ui.routes/turbolink :edit-profile)
+                                maybe-add-toggle-menu-handler)
+             (:person/name (<== [:bridge.ui/active-person]))]
             [:a.navbar-item {:href "/logout"} "Sign Out"]]]]]))))
 
 (defn error-modal []

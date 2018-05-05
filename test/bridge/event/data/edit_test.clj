@@ -38,8 +38,7 @@
     (is (= (get-in for-editing [:event/chapter :chapter/slug])
            "clojurebridge-hermanus"))
     (is (= (->  for-editing :event/organisers first :person/name)
-           "Test Name"))
-    ))
+           "Test Name"))))
 
 (deftest check-custom-validation:event-status
 

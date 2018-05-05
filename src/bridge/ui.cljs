@@ -1,5 +1,6 @@
 (ns bridge.ui
-  (:require bridge.event.ui
+  (:require bridge.person.ui
+            bridge.event.ui
             [bridge.ui.base :as ui.base]
             [bridge.ui.spec :as ui.spec]
             [cljs.reader :as edn]
@@ -8,6 +9,7 @@
 (def app-routes
   ["/app"
    (merge {"" :home}
+          bridge.person.ui/routes
           bridge.event.ui/routes)])
 
 (rf/reg-sub ::active-person (fn [db _] (::active-person db)))

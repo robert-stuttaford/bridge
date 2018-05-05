@@ -22,6 +22,7 @@
 
 (require 'bridge.data.dev-data
          'bridge.event.api
+         'bridge.person.api
          'bridge.web.jetty)
 
 (def auth-backend
