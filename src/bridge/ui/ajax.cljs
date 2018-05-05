@@ -7,7 +7,7 @@
   (fn [db [_ data on-success]]
     {:http-xhrio
      (cond-> {:method          :post
-              :uri             "/client/api"
+              :uri             (str "/client/api?" (name (:action data)))
               :params          data
               :timeout         5000
               :format          (ajax.edn/edn-request-format)
