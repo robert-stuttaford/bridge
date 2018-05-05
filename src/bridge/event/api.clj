@@ -69,16 +69,13 @@
 
 (defmethod api.base/api ::update-field-value!
   [{:datomic/keys [db conn]
-    :keys [active-person-id field-update]}]
-  (let [event-id (:field/entity-id field-update)]
-    (or (event.data/check-event-organiser db event-id active-person-id)
-        (let [{error :error
-               db    :db-after
-               :as   result}
-              (data.edit/update-field-value! conn db
-                                             event.data.edit/edit-whitelist
-                                             field-update)]
-          (if (some? error)
-            (assoc result :field/entity-id event-id)
-            (event.data.edit/event-for-editing db event-id))))))
-
+    :keys [active-person-id]
+    {:field/keys [entity-id attr] :as field-update} :field-update}]
+  (or (event.data/check-event-organiser db entity-id active-person-id)
+      (let [{:keys [error db-after] :as result}
+            (data.edit/update-field-value! conn db
+                                           event.data.edit/edit-whitelist
+                                           field-update)]
+        (if (some? error)
+          (assoc result :field/orig-value (datomic/attr db entity-id attr))
+          (event.data.edit/event-for-editing db-after entity-id)))))
