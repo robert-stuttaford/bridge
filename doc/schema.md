@@ -7,25 +7,25 @@
 - ~~full name~~
 - ~~email address~~
 - ~~password~~
-- admin? (manage chapters)
-- minor or adult?
-- spoken languages
-- gender identity
-- agree to code of conduct?
-- food preferences
-- t-shirt size
-- attendees
-  - past programming experience
-  - experience with Clojure?
-  - been to ClojureBridge before?
-- coaches
-  - phone number
-  - coaching languages
-  - clojure experience
-  - past coaching experience
-  - background / other languages
-  - “who would you prefer to coach for?”
-  - floating coach OK?
+- ~~admin? (manage chapters)~~
+- ~~minor or adult?~~
+- ~~spoken languages~~
+- ~~gender identity~~
+- ~~agree to code of conduct?~~
+- ~~food preferences~~
+- ~~t-shirt size~~
+- ~~attendees~~
+  - ~~past programming experience~~
+  - ~~experience with Clojure?~~
+  - ~~been to ClojureBridge before?~~
+- ~~coaches~~
+  - ~~phone number~~
+  - ~~coaching languages~~
+  - ~~clojure experience~~
+  - ~~past coaching experience~~
+  - ~~background / other languages~~
+  - ~~“who would you prefer to coach for?”~~
+  - ~~floating coach OK?~~
 
 ### chapter
 

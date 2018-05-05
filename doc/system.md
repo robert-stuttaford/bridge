@@ -7,7 +7,7 @@ Own profile access and management
 - ~~Login~~
 
 New Events
-- Create
+- ~~Create~~
 - Register
 - Close registration
 - Send invites
@@ -35,7 +35,7 @@ All chapters management
 
 ##### Organiser
 
-- Add, modify, remove events
+- ~~Add~~, ~~modify~~, remove events
 - Close event registration
 - Modify attendee state to confirmed, cancelled
 - Modify coach state to accepted, declined
@@ -44,7 +44,7 @@ All chapters management
 - Group attendees
 - Views
   - Past vs Scheduled / active
-  - Event details
+  - ~~Event details~~
   - Attendees
     - List Filters:
       - Coach?
