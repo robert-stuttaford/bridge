@@ -56,7 +56,7 @@
         :cardinality :db.cardinality/one
         :valueType   :db.type/string}
 
-   #:db{:ident       :person/experience-with-target-language?
+   #:db{:ident       :person/experience-with-language?
         :cardinality :db.cardinality/one
         :valueType   :db.type/boolean}
 
@@ -72,9 +72,9 @@
         :cardinality :db.cardinality/one
         :valueType   :db.type/string}
 
-   #:db{:ident       :person/experience-with-target-language
+   #:db{:ident       :person/past-coaching-experience
         :cardinality :db.cardinality/one
-        :valueType   :db.type/boolean}
+        :valueType   :db.type/string}
 
    #:db{:ident       :person/background-experience
         :cardinality :db.cardinality/one

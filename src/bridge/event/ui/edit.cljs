@@ -26,8 +26,8 @@
 
      [:div.columns
       [:div.column.is-two-fifths
-       [ui.edit-field/edit-text-field (event.spec/attr->field :event/title)]
-       [ui.edit-field/edit-text-field (event.spec/attr->field :event/slug)]
+       [ui.edit-field/edit (event.spec/attr->field :event/title)]
+       [ui.edit-field/edit (event.spec/attr->field :event/slug)]
 
        [:div.field
         [:label.label "Dates"]
@@ -59,6 +59,6 @@
       [:div.is-divider-vertical]
 
       [:div.column
-       [ui.edit-field/edit-text-field (event.spec/attr->field :event/details-markdown)]
-       [ui.edit-field/edit-text-field (event.spec/attr->field :event/notes-markdown)]]]]
+       [ui.edit-field/edit (event.spec/attr->field :event/details-markdown)]
+       [ui.edit-field/edit (event.spec/attr->field :event/notes-markdown)]]]]
     [:p "No event."]))

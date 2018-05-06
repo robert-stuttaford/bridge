@@ -17,7 +17,7 @@
   (s/keys :req [:field/attr :field/value]
           :opt [:field/entity-id :field/retract?]))
 
-(s/def :field/type #{:text :email :markdown})
+(s/def :field/type #{:text :multiline-text :email :markdown :checkbox})
 (s/def :field/edit-state-key keyword?)
 (s/def :field/placeholder :bridge.spec/optional-string)
 (s/def :field/title :bridge.spec/required-string)

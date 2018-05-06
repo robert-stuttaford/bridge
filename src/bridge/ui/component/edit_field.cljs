@@ -66,11 +66,9 @@
                        data.string/not-blank)
                    "(empty)")}}]))
 
-(defn edit-text-field [field]
-  (ui.spec/check-spec-error :bridge/edit-field-config field)
-  (let [{:field/keys [type edit-state-key attr title placeholder]} field
-        {:keys [orig-value edit-value error editing? dirty? invalid? busy?]
-         :or   {status :ready}}
+(defn edit-text-field [{:field/keys [type edit-state-key attr title placeholder]
+                        :as field}]
+  (let [{:keys [orig-value edit-value error editing? dirty? invalid? busy?]}
         (get (<== [edit-state-key]) attr)
         edit!   #(==> [::start-editing field])
         update! #(==> [::update-edit-state field %])
@@ -89,8 +87,8 @@
        [:div.control
         (when (or invalid? busy?) {:class "has-icons-right"})
         [(case type
-           (:text :email) :input.input
-           :markdown      :textarea.textarea)
+           (:text :email)              :input.input
+           (:multiline-text :markdown) :textarea.textarea)
          (cond-> {:placeholder (str (or placeholder title)
                                     (when invalid? " is required!"))
                   :value       edit-value
@@ -108,20 +106,21 @@
                                    "Escape"
                                    (reset!)
                                    nil))}
-           (not= type :markdown) (assoc :type (name type))
-           (= type :markdown)    (merge {:rows      10
-                                         :autoFocus "autofocus"})
-           dirty?                (assoc :class "is-warning")
-           invalid?              (assoc :class "is-danger")
-           busy?                 (assoc :disabled "disabled"))]
+           (not (contains? #{:multiline-text :markdown} type)) (assoc :type (name type))
+           (= type :markdown)       (merge {:rows      10
+                                            :autoFocus "autofocus"})
+           (= type :multiline-text) (assoc :rows 4)
+           dirty?   (assoc :class "is-warning")
+           invalid? (assoc :class "is-danger")
+           busy?    (assoc :disabled "disabled"))]
         (cond invalid?
               [:span.icon.is-small.is-right [:i.fas.fa-exclamation-triangle]]
               busy?
               [:span.icon.is-small.is-right [:i.fas.fa-circle-notch.fa-spin]])]
        [:div {:on-click #(edit!)}
         (case type
-          (:text :email) orig-value
-          :markdown      [markdown orig-value placeholder])])
+          (:text :email :multiline-text) orig-value
+          :markdown [markdown orig-value placeholder])])
      (when dirty?
        [:div.buttons.is-pulled-right {:style {:margin-top "5px"}}
         [:button.button.is-small.is-primary
@@ -136,3 +135,27 @@
          {:title    "Press Escape"
           :on-click #(reset!)}
          "Cancel"]])]))
+
+(defn edit-checkbox [{:field/keys [edit-state-key attr title] :as field}]
+  (let [{:keys [edit-value busy?]} (get (<== [edit-state-key]) attr)
+        commit! #(==> [::commit-edit field %])]
+    [:div.field
+     [:div.control
+      [:label.checkbox
+       (if busy?
+         [:span.icon.is-small.is-right [:i.fas.fa-circle-notch.fa-spin]]
+         [:input.checkbox
+          {:type      "checkbox"
+           :value     "true"
+           :checked   (true? edit-value)
+           :on-change #(commit! (.. % -currentTarget -checked))}])
+       " " title]]]))
+
+(defn edit [{:field/keys [type] :as field}]
+  (ui.spec/check-spec-error :bridge/edit-field-config field)
+  (case type
+    (:text :email :multiline-text :markdown)
+    (edit-text-field field)
+
+    :checkbox
+    (edit-checkbox field)))

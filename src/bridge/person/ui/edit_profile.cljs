@@ -7,12 +7,6 @@
 ;; :person/email - request fresh confirmation email
 ;; :person/password - with confirmation field
 
-;; :person/minor?
-;; :person/floating-coach?
-;; :person/experience-with-target-language?
-;; :person/attended-event-before?
-;; :person/agree-to-code-of-conduct?
-
 (defn edit-profile []
   [:div
 
@@ -25,24 +19,33 @@
 
    [:div.columns
     [:div.column.is-two-fifths
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/name)]
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/spoken-languages)]
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/food-preferences)]
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/t-shirt-size)]
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/gender-identity)]
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/phone-number)]
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/past-programming-experience)]
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/background-experience)]
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/coaching-languages)]
-     [ui.edit-field/edit-text-field
-      (event.spec/attr->field :person/preferred-coachee-level)]]]])
+     [:h3.subtitle "For everyone"]
+
+     [ui.edit-field/edit (event.spec/attr->field :person/name)]
+     [ui.edit-field/edit (event.spec/attr->field :person/minor?)]
+     [ui.edit-field/edit (event.spec/attr->field :person/spoken-languages)]
+     [ui.edit-field/edit (event.spec/attr->field :person/gender-identity)]
+     [ui.edit-field/edit (event.spec/attr->field :person/food-preferences)]
+     [ui.edit-field/edit (event.spec/attr->field :person/t-shirt-size)]
+     [ui.edit-field/edit (event.spec/attr->field :person/agree-to-code-of-conduct?)]
+
+     [:div.is-divider]
+
+     [:h3.subtitle "For attendees"]
+
+     [ui.edit-field/edit (event.spec/attr->field :person/past-programming-experience)]
+     [ui.edit-field/edit (event.spec/attr->field :person/experience-with-language?)]
+     [ui.edit-field/edit (event.spec/attr->field :person/attended-event-before?)]]
+
+    [:div.is-divider-vertical]
+
+    [:div.column.is-two-fifths
+     [:h3.subtitle "For coaches"]
+
+     [ui.edit-field/edit (event.spec/attr->field :person/floating-coach?)]
+     [ui.edit-field/edit (event.spec/attr->field :person/coaching-languages)]
+     [ui.edit-field/edit (event.spec/attr->field :person/phone-number)]
+     [ui.edit-field/edit (event.spec/attr->field :person/past-coaching-experience)]
+     [ui.edit-field/edit (event.spec/attr->field :person/background-experience)]
+     [ui.edit-field/edit (event.spec/attr->field :person/preferred-coachee-level)]]]])
 

@@ -2,9 +2,6 @@
   (:require [bridge.data.datomic :as datomic]
             [clojure.string :as str]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Edit
-
 (def profile-for-editing-pull-spec
   [:person/name
    :person/minor?
@@ -14,11 +11,11 @@
    :person/food-preferences
    :person/t-shirt-size
    :person/past-programming-experience
-   :person/experience-with-target-language?
+   :person/experience-with-language?
    :person/attended-event-before?
    :person/phone-number
    :person/coaching-languages
-   :person/experience-with-target-language
+   :person/past-coaching-experience
    :person/background-experience
    :person/preferred-coachee-level
    :person/floating-coach?])
@@ -35,18 +32,11 @@
     :person/food-preferences
     :person/t-shirt-size
     :person/past-programming-experience
-    :person/experience-with-target-language?
+    :person/experience-with-language?
     :person/attended-event-before?
     :person/phone-number
     :person/coaching-languages
-    :person/experience-with-target-language
+    :person/past-coaching-experience
     :person/background-experience
     :person/preferred-coachee-level
     :person/floating-coach?})
-
-(into {} (for [f edit-whitelist]
-           [f
-            #:field{:title            (str/replace (str/capitalize (name f))
-                                                   "-" " ")
-                    :type             :text
-                    :edit-by-default? true}]))

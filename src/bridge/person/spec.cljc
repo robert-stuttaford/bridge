@@ -31,58 +31,77 @@
 
 ;; attendees
 (s/def :person/past-programming-experience :bridge.spec/optional-string)
-(s/def :person/experience-with-target-language? boolean?)
+(s/def :person/experience-with-language? boolean?)
 (s/def :person/attended-event-before? boolean?)
 
 ;; coaches
 (s/def :person/phone-number :bridge.spec/optional-string)
 (s/def :person/coaching-languages :bridge.spec/optional-string)
-(s/def :person/experience-with-target-language? boolean?)
+(s/def :person/past-coaching-experience :bridge.spec/optional-string)
 (s/def :person/background-experience :bridge.spec/optional-string)
 (s/def :person/preferred-coachee-level :bridge.spec/optional-string)
 (s/def :person/floating-coach? boolean?)
 
 (def attr->field-config
   #:person{:name
-           #:field{:title            "Name"
-                   :type             :text
-                   :edit-by-default? true}
+           #:field {:title            "Name"
+                    :type             :text
+                    :edit-by-default? true}
            :food-preferences
-           #:field{:title            "Food preferences"
-                   :type             :text
-                   :edit-by-default? true}
+           #:field {:title            "Food preferences"
+                    :type             :text
+                    :edit-by-default? true}
            :t-shirt-size
-           #:field{:title            "T shirt size"
-                   :type             :text
-                   :edit-by-default? true}
+           #:field {:title            "T shirt size"
+                    :type             :text
+                    :edit-by-default? true}
            :gender-identity
-           #:field{:title            "Gender identity"
-                   :type             :text
-                   :edit-by-default? true}
+           #:field {:title            "Gender identity"
+                    :type             :text
+                    :edit-by-default? true}
            :phone-number
-           #:field{:title            "Phone number"
-                   :type             :text
-                   :edit-by-default? true}
+           #:field {:title            "Phone number"
+                    :type             :text
+                    :edit-by-default? true}
            :spoken-languages
-           #:field{:title            "Spoken languages"
-                   :type             :text
-                   :edit-by-default? true}
+           #:field {:title            "Spoken languages"
+                    :type             :text
+                    :edit-by-default? true}
            :past-programming-experience
-           #:field{:title            "Past programming experience"
-                   :type             :text
-                   :edit-by-default? true}
+           #:field {:title            "Past programming experience"
+                    :type             :multiline-text
+                    :edit-by-default? true}
            :background-experience
-           #:field{:title            "Background experience"
-                   :type             :text
-                   :edit-by-default? true}
+           #:field {:title            "Background experience"
+                    :type             :multiline-text
+                    :edit-by-default? true}
            :coaching-languages
-           #:field{:title            "Coaching languages"
-                   :type             :text
-                   :edit-by-default? true}
+           #:field {:title            "Coaching languages"
+                    :type             :text
+                    :edit-by-default? true}
+           :past-coaching-experience
+           #:field {:title            "Past coaching experience"
+                    :type             :multiline-text
+                    :edit-by-default? true}
            :preferred-coachee-level
-           #:field{:title            "Preferred coachee level"
-                   :type             :text
-                   :edit-by-default? true}})
+           #:field {:title            "Preferred coachee level"
+                    :type             :text
+                    :edit-by-default? true}
+           :minor?
+           #:field {:title "Are you a minor? (below the age of 18)"
+                    :type  :checkbox}
+           :floating-coach?
+           #:field {:title "Are you willing to coach more than one group?"
+                    :type  :checkbox}
+           :experience-with-language?
+           #:field {:title "Do you have any experience with Clojure?"
+                    :type  :checkbox}
+           :attended-event-before?
+           #:field {:title "Have you been to ClojureBridge before?"
+                    :type  :checkbox}
+           :agree-to-code-of-conduct?
+           #:field {:title "Do you agree to our Code of Conduct?"
+                    :type  :checkbox}})
 
 (defn attr->field [attr]
   (merge #:field{:edit-state-key :bridge.person.ui/profile-for-editing
