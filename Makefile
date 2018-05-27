@@ -1,15 +1,15 @@
-.PHONY: all test
+.PHONY: all test dev
 
-all: figwheel
+all: dev
+
+dev:
+	source bridge.env && clojure -Adev script/dev.clj
 
 serve:
 	source bridge.env && clojure -m bridge.service
 
 test:
 	clojure -A\:test
-
-figwheel:
-	source bridge.env && clojure -A\:dev dev/figwheel.clj
 
 clean:
 	rm -rf resources/js target bridge.jar
