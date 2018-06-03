@@ -30,6 +30,18 @@ https://github.com/healthfinch/depstar instead of pack.alpha?
 - automatically track all calls for a request, and present this info in the response
 - interceptors
 
+TIL that when you do a reverse lookup on a component entity you get the parent entity directly (not a set). so:
+
+```
+(:message/_user my-user) ;;=> #{{:db/id 123}}
+(:message/_events event) ;;=> {:db/id 234}
+```
+
+The example above is interesting because it emphasises how useful it is to think about whether something is a component entity. In the case of that :message/user one, you could argue that the message is actually a component of the user (heuristic: if I delete the user I also want to delete the message AND only there is only 1 user per message)
+
+From there, you get a very nice way to decide which direction to set up your attribute when you create schema, as there's now a good reason to say that it should be :user/messages rather than :message/user ; and since you get direct reverse lookup in component entities, perf is 100% preserved.
+
+
 # client
 
 use https://github.com/ingesolvoll/kee-frame for its routing and event chains?
