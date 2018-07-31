@@ -1,4 +1,4 @@
-# ADR 002 --> Make Small Decisions
+# ADR 001 --> Make Small Decisions
 
 ## Context
 
