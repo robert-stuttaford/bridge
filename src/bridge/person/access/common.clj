@@ -13,5 +13,5 @@
 
 (def logo
   [:figure.avatar
-   [:img {:src (str "http://www.clojurebridge.org/assets/"
-                    "logo-small-608079136860146e2095ff960b78fd0d.png")}]])
+   [:img {:src (str "http://www.clojurebridge.org/assets/images/"
+                    "logo-small.png")}]])

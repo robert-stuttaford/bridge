@@ -29,8 +29,8 @@
          [:div.container
           [:div.navbar-brand
            [:a.navbar-item (ui.routes/turbolink :home)
-            [:img {:src (str "http://www.clojurebridge.org/assets/"
-                             "cb-logo-cbba8a3667c88b78189d8826867cf01a.png")}]]
+            [:img {:src (str "http://www.clojurebridge.org/assets/images/"
+                             "logo.png")}]]
            [:a.navbar-burger (cond-> {:role          "button"
                                       :aria-label    "menu"
                                       :aria-expanded menu-active?
