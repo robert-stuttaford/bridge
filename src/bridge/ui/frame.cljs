@@ -30,7 +30,12 @@
           [:div.navbar-brand
            [:a.navbar-item (ui.routes/turbolink :home)
             [:img {:src (str "http://www.clojurebridge.org/assets/images/"
-                             "logo.png")}]]
+                             "logo-small.png")
+                   :style {:background "white"
+                           :max-height "32px"
+                           :border-radius "16px"
+                           :-mox-border-radius "16px"
+                           }}]]
            [:a.navbar-burger (cond-> {:role          "button"
                                       :aria-label    "menu"
                                       :aria-expanded menu-active?
