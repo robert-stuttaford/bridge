@@ -35,7 +35,7 @@
                            :max-height "32px"
                            :border-radius "16px"
                            :-mox-border-radius "16px"
-                           }}]]
+                           :-webkit-border-radius "16px"}}]]
            [:a.navbar-burger (cond-> {:role          "button"
                                       :aria-label    "menu"
                                       :aria-expanded menu-active?
