@@ -1,7 +1,8 @@
 (ns bridge.event.api-test
   (:require [bridge.test.util :refer [test-setup]]
             [bridge.web.api.base :as api.base]
-            [clojure.test :refer [deftest use-fixtures]]))
+            [clojure.test :refer [deftest use-fixtures]])
+  (:import clojure.lang.ExceptionInfo))
 
 (use-fixtures :once test-setup)
 
