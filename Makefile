@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: all test
 
 all: figwheel
