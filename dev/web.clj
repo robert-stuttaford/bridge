@@ -1,13 +1,26 @@
 (ns web
   (:require [clojure.pprint :as pprint]
-            [ring.adapter.jetty :as jetty]))
+            [ring.adapter.jetty :as jetty]
+            [bridge.data.datomic :as datomic]
+            graphql))
 
 ;; app
 
 (defn page [request]
-  {:status  200
-   :headers {"Content-Type" "text/plain"}
-   :body    (with-out-str (pprint/pprint (into (sorted-map) request)))})
+  (or (let [user (:user request)]
+        (condp = (:uri request)
+          "/"
+          {:status  200
+           :headers {"Content-Type" "text/plain"}
+           :body    "Hi!"}
+          "/debug"
+          (when (:admin? user)
+            {:status  200
+             :headers {"Content-Type" "text/plain"}
+             :body    (with-out-str (pprint/pprint (into (sorted-map) request)))})))
+      {:status 403}))
+
+(page {:uri "/debug"})
 
 (defn middleware-1 [handler]
   (fn [request]
@@ -22,10 +35,33 @@
         handler
         (assoc-in [:headers "m2-resp"] "m2"))))
 
+(defn ensure-admin [handler]
+  (fn [request]
+    (-> request
+        (assoc-in [:user] {:admin? true})
+        handler)))
+
+(defn is-admin? [handler]
+  (fn [request]
+    (if (get-in request [:user :admin?])
+      (handler request)
+      {:status 403})))
+
+;; jetty
+;; m2 req
+;; m1 req
+;; page
+;; m1 resp
+;; m2 resp
+;; jetty
+
 (def handler
+  #_graphql/handler
+
   (-> page
       middleware-1
-      middleware-2))
+      middleware-2
+      ensure-admin))
 
 ;; service
 
